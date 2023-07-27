@@ -21,6 +21,15 @@ export async function exchangeWebFlowCode(code: string) {
     })
 }
 
+export async function logout(token: string) {
+    return oauthMethods.deleteToken({
+        clientType: "github-app",
+        clientId: clientConfig.github.clientId,
+        clientSecret: config.github.clientSecret,
+        token,
+    })
+}
+
 type GitHubAppAuthenticationWithRefreshToken = oauthMethods.GitHubAppAuthenticationWithRefreshToken
 export type { PullRequestEvent, IssuesEvent, PullRequestReviewEvent, InstallationEvent, GitHubAppAuthenticationWithRefreshToken, User }
 export default app

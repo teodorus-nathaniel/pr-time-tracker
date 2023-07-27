@@ -1,12 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { names, serializeCookie } from '$lib/CookieManager';
-import app from '$lib/server/github';
+import { logout } from '$lib/server/github';
 
 export const GET: RequestHandler = async ({ cookies }) => {
     const accessToken = cookies.get(names.accessTokenCookieName);
     if (accessToken) {
-        await app.oauth.deleteToken({ token: accessToken })
+        await logout(accessToken)
     }
     cookies.delete(names.accessTokenCookieName, serializeCookie({
         expires: new Date(0)
