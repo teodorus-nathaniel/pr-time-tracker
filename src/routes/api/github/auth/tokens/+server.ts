@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json, redirect } from '@sveltejs/kit';
 import { names, serializeCookie } from '$lib/CookieManager';
-import app from '$lib/server/github';
+import { refreshUserToken } from '$lib/server/github';
 
 export const GET: RequestHandler = async ({ cookies }) => {
     let accessToken = cookies.get(names.accessTokenCookieName);
@@ -10,9 +10,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
     if (accessToken && accessToken !== "undefined") {
         return json({ accessToken, refreshToken }, { status: 200 })
     } else if (refreshToken && refreshToken !== "undefined") {
-        const { authentication } = await app.oauth.refreshToken({
-            refreshToken
-        })
+        const { authentication } = await refreshUserToken(refreshToken)
         accessToken = authentication.token
         refreshToken = authentication.refreshToken
 
@@ -24,6 +22,6 @@ export const GET: RequestHandler = async ({ cookies }) => {
         }))
         return json({ accessToken: accessToken, refreshToken }, { status: 200 })
     } else {
-        throw redirect(307, '/login')
+        throw redirect(307, '/')
     }
 }

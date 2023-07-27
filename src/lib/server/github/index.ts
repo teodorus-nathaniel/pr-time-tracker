@@ -30,6 +30,15 @@ export async function logout(token: string) {
     })
 }
 
+export async function refreshUserToken(token: string) {
+    return oauthMethods.refreshToken({
+        clientType: "github-app",
+        clientId: clientConfig.github.clientId,
+        clientSecret: config.github.clientSecret,
+        refreshToken: token,
+    })
+}
+
 type GitHubAppAuthenticationWithRefreshToken = oauthMethods.GitHubAppAuthenticationWithRefreshToken
 export type { PullRequestEvent, IssuesEvent, PullRequestReviewEvent, InstallationEvent, GitHubAppAuthenticationWithRefreshToken, User }
 export default app

@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import app, { type User } from '$lib/server/github';
+import { type User, refreshUserToken } from '$lib/server/github';
 import { names, serializeCookie } from '$lib/CookieManager';
 import type { RequestHandler } from '@sveltejs/kit';
 import config from '$lib/config';
@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
 
     if (!accessToken) {
         if (refreshToken) {
-            const { authentication } = await app.oauth.refreshToken({ refreshToken });
+            const { authentication } = await refreshUserToken(refreshToken);
 
             cookies.set(names.accessTokenCookieName, authentication.token, serializeCookie({
                 expires: new Date(authentication.expiresAt)

@@ -1,7 +1,5 @@
 import type { CookieSerializeOptions } from 'cookie'
 import { isDev } from '$lib/config'
-import Cookies, { type CookieSetOptions } from 'universal-cookie'
-
 
 export const names = {
     accessTokenCookieName: 'invoicingAccessToken',
