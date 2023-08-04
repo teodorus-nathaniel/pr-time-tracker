@@ -1,0 +1,21 @@
+@import './variables';
+
+@mixin createVariables($list) {
+  @each $key, $value in $list {
+    --#{$key}: #{$value};
+  }
+}
+
+@mixin colorScheme($scheme: 'dark') {
+  @if $scheme == 'light' {
+    @include createVariables($common-colors);
+    @include createVariables($light-colors);
+    background-color: theme('colors.l2');
+  } @else {
+    @include createVariables($common-colors);
+    @include createVariables($dark-colors);
+    background-color: theme('colors.l1');
+  }
+
+  color: theme('colors.t1');
+}
