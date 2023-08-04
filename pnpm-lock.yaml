@@ -11,6 +11,9 @@ dependencies:
   '@octokit/webhooks-types':
     specifier: ^7.1.0
     version: 7.1.0
+  '@steeze-ui/heroicons':
+    specifier: ^2.2.3
+    version: 2.2.3
   cookie:
     specifier: ^0.5.0
     version: 0.5.0
@@ -711,6 +714,10 @@ packages:
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
     dev: true
+
+  /@steeze-ui/heroicons@2.2.3:
+    resolution: {integrity: sha512-bv4YK375U9TDS50SmJ5VdFy2UmMhgKbJCCbo6IUU3qs2luEj2VX6sQoDy96j8AIKttxMd62ih1j0lZj7CTjIfA==}
+    dev: false
 
   /@sveltejs/adapter-auto@2.1.0(@sveltejs/kit@1.22.4):
     resolution: {integrity: sha512-o2pZCfATFtA/Gw/BB0Xm7k4EYaekXxaPGER3xGSY3FvzFJGTlJlZjBseaXwYSM94lZ0HniOjTokN3cWaLX6fow==}
