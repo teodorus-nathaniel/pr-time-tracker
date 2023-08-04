@@ -1,12 +1,12 @@
 <script lang="ts">
   /** types */
-  import type { ButtonProps } from '../index';
+  import type { ButtonProps } from '../types';
 
   /** internals */
   import Content from './content.svelte';
 
   /** props */
-  let className: string | undefined | null = '';
+  let className: ButtonProps['class'] = '';
   export { className as class };
   export let label: ButtonProps['label'] = undefined;
   export let size: ButtonProps['size'] = 'medium';

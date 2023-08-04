@@ -3,6 +3,7 @@
 
   import type { PageData } from './$types';
 
+  import Icon from '$lib/components/Icon/index.svelte';
   import Button from '$lib/components/Button/index.svelte';
   import { invalidations } from '$lib/config';
   import { genAuthUrl } from '$lib/github';
@@ -38,6 +39,6 @@
   <button on:click|preventDefault={logout} disabled={isRequesting}> Logout </button>
 {:else}
   <Button size="large" variant="secondary" onClick={loginWithGithub} disabled={isRequesting}>
-    Log in with Github
+    <Icon name="exclamation-triangle" isOutlined class="mr-2" /> Log in with Github
   </Button>
 {/if}

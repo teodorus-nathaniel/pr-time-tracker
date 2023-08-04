@@ -1,7 +1,7 @@
-import { HTMLButtonAttributes, type HTMLAnchorAttributes } from 'svelte/elements';
+import type { HTMLButtonAttributes, SVGAttributes } from 'svelte/elements';
 
 /** Button */
-export interface ButtonProps extends HTMLButtonAttributes, HTMLAnchorAttributes {
+export interface ButtonProps extends HTMLButtonAttributes {
   size: 'small' | 'medium' | 'large';
   variant: 'primary' | 'secondary' | 'solo';
   label?: string;
@@ -18,7 +18,7 @@ export interface ButtonProps extends HTMLButtonAttributes, HTMLAnchorAttributes 
 }
 
 /** Icon */
-export interface IconProps {
+export interface IconProps extends SVGAttributes<SVGAElement> {
   name: IconName;
   width?: number;
   height?: number;

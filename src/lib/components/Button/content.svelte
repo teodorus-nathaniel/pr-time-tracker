@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ButtonProps } from '..';
+  import type { ButtonProps } from '../types';
 
   import Icon from '$lib/components/Icon/index.svelte';
 

@@ -1,9 +1,9 @@
 <script lang="ts">
   /** types */
-  import type { IconSouceProps } from '..';
+  import type { IconSouceProps } from '../types';
 
   /** props */
-  let className = '';
+  let className: IconSouceProps['class'] = '';
   export { className as class };
   export let src: IconSouceProps['src'];
   export let width = 24;

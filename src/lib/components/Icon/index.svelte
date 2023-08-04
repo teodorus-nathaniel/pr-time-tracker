@@ -4,9 +4,10 @@
   import { ExclamationTriangle } from '@steeze-ui/heroicons';
 
   /** types */
-  import type { IconName, IconProps } from '..';
+  import type { IconName, IconProps } from '../types';
 
   /** siblings */
+
   import IconSource from './source.svelte';
 
   /** props */
