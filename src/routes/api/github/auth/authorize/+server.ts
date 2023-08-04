@@ -6,7 +6,7 @@ import {
   exchangeWebFlowCode,
   type GitHubAppAuthenticationWithRefreshToken
 } from '$lib/server/github';
-import { names, serializeCookie } from '$lib/CookieManager';
+import { names, serializeCookie } from '$lib/server/cookie';
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
   const code = url.searchParams.get('code') as string;
