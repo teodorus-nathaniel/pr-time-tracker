@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto, invalidate } from '$app/navigation';
-  
+
   import type { PageData } from './$types';
-  
+
   import { invalidations } from '$lib/config';
   import { genAuthUrl } from '$lib/github';
 
@@ -34,8 +34,9 @@
 </p>
 {#if data.user}
   <p>Hello <b>{data.user.name}</b></p>
-  <button on:click|preventDefault={logout} disabled={isRequesting}>Logout</button>
+  <button on:click|preventDefault={logout} disabled={isRequesting}> Logout </button>
 {:else}
-  <button on:click|preventDefault={loginWithGithub} disabled={isRequesting}
-    >Log in with Github</button>
+  <button on:click|preventDefault={loginWithGithub} disabled={isRequesting}>
+    Log in with Github
+  </button>
 {/if}

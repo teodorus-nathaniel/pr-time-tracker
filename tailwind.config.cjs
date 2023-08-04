@@ -1,18 +1,12 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+// eslint-disable-next-line
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{html,svelte,ts,sass,scss,pug}'],
+  content: ['./src/**/*.{html,svelte,sass,scss,pug}'],
   darkMode: ['class', '[data-theme="dark"]'],
   theme: {
-    borderRadius: {
-      ...defaultTheme.borderRadius,
-      '2sm': '4px',
-      '2lg': '10px',
-      'base-radius': '20px',
-      underbase: '11px'
-    },
+    ...defaultTheme,
     screens: {
       xs: '375px',
       sm: '480px',
@@ -66,18 +60,7 @@ module.exports = {
       'tw-poll-bar-color': 'rgb(var(--poll-bar-color) / <alpha-value>)',
       'tw-inline-code-color': 'rgb(var(--inline-code-color) / <alpha-value>)',
       'tw-code-color': 'rgb(var(--code-color) / <alpha-value>)',
-      'tw-code-bg-color': 'rgb(var(--code-bg-color) / <alpha-value>)',
-      'tw-tweet-font-color': 'rgb(var(--tweet-font-color) / <alpha-value>)',
-      'tw-tweet-bg-color': 'rgb(var(--tweet-bg-color) / <alpha-value>)',
-      'tw-tweet-link-color': 'rgb(var(--tweet-link-color) / <alpha-value>)',
-      'tw-tweet-link-color-hover': 'rgb(var(--tweet-link-color-hover) / <alpha-value>)',
-      'tw-tweet-color-gray': 'rgb(var(--tweet-color-gray) / <alpha-value>)',
-      'tw-tweet-color-red': 'rgb(var(--tweet-color-red) / <alpha-value>)',
-      'tw-tweet-btn-color': 'rgb(var(--tweet-btn-color) / <alpha-value>)',
-      'tw-tweet-border': 'rgb(var(--tweet-border) / <alpha-value>)',
-      'tw-tweet-border-hover': 'rgb(var(--tweet-border-hover) / <alpha-value>)',
-      'tw-tweet-avatar-border': 'rgb(var(--tweet-avatar-border) / <alpha-value>)',
-      'tw-tweet-btn-border': 'rgb(var(--tweet-btn-border) / <alpha-value>)'
+      'tw-code-bg-color': 'rgb(var(--code-bg-color) / <alpha-value>)'
     },
     fontSize: {
       ...defaultTheme.fontSize,
@@ -274,15 +257,7 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', ...defaultTheme.fontFamily.sans]
       },
-      zIndex: {
-        1: '1',
-        9: '9'
-      },
-      backdropBlur: {
-        overlay: '5px'
-      },
       boxShadow: {
-        ...defaultTheme.boxShadow,
         input:
           '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 8px rgba(0, 0, 0, var(--shadow-input-alpha))',
         tag: '0px 4px 8px rgba(0, 0, 0, 0.16)',
@@ -300,9 +275,6 @@ module.exports = {
           '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.04)',
         'secondary-button-active':
           '0px 0px 0px 2px rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.04)'
-      },
-      minHeight: {
-        32: '8rem'
       }
     }
   },
