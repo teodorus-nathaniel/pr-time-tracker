@@ -65,156 +65,156 @@ module.exports = {
     fontSize: {
       ...defaultTheme.fontSize,
       'title-l': [
-        '56px',
+        '3.5rem',
         {
-          lineHeight: '64px',
+          lineHeight: '4rem',
           fontWeight: '900'
         }
       ],
       'title-s': [
-        '48px',
+        '3rem',
         {
-          lineHeight: '48px',
+          lineHeight: '3rem',
           fontWeight: '900'
         }
       ],
       'subtitle-l': [
-        '20px',
+        '1.25rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '500'
         }
       ],
       'subtitle-s': [
-        '18px',
+        '1.125rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '500'
         }
       ],
       'h1-l': [
-        '48px',
+        '3rem',
         {
-          lineHeight: '64px',
+          lineHeight: '4rem',
           fontWeight: '900'
         }
       ],
       'h1-s': [
-        '42px',
+        '2.625rem',
         {
-          lineHeight: '48px',
+          lineHeight: '3rem',
           fontWeight: '900'
         }
       ],
       'h2-l': [
-        '32px',
+        '2rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h2-s': [
-        '28px',
+        '1.75rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h3-l': [
-        '28px',
+        '1.75rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h3-s': [
-        '24px',
+        '1.5rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h4-l': [
-        '24px',
+        '1.5rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h4-s': [
-        '20px',
+        '1.25rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h5-l': [
-        '20px',
+        '1.25rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h5-s': [
-        '18px',
+        '1.125rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h6-l': [
-        '18px',
+        '1.125rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '900'
         }
       ],
       'h6-s': [
-        '16px',
+        '1rem',
         {
-          lineHeight: '16px',
+          lineHeight: '1rem',
           fontWeight: '900'
         }
       ],
       'paragraph-l': [
-        '18px',
+        '1.125rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '400'
         }
       ],
       'paragraph-s': [
-        '16px',
+        '1rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '400'
         }
       ],
       cta: [
-        '14px',
+        '0.875rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '700'
         }
       ],
       footnote: [
-        '14px',
+        '0.875rem',
         {
-          lineHeight: '20px',
+          lineHeight: '1.25rem',
           fontWeight: '500'
         }
       ],
       caption: [
-        '12px',
+        '0.75rem',
         {
-          lineHeight: '16px',
+          lineHeight: '1rem',
           fontWeight: '500'
         }
       ],
       code: [
-        '14px',
+        '0.875rem',
         {
-          lineHeight: '32px',
+          lineHeight: '2rem',
           fontWeight: '600'
         }
       ]
@@ -259,22 +259,22 @@ module.exports = {
       },
       boxShadow: {
         input:
-          '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 8px rgba(0, 0, 0, var(--shadow-input-alpha))',
-        tag: '0px 4px 8px rgba(0, 0, 0, 0.16)',
+          '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0.25rem 0.5rem rgba(0, 0, 0, var(--shadow-input-alpha))',
+        tag: '0 0.25rem 0.5rem rgba(0, 0, 0, 0.16)',
         'tag-active':
-          ' 0px 0px 0px 2px rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0px 4px 8px rgba(0, 0, 0, 0.16)',
+          ' 0 0 0 0.125rem rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0 0.25rem 0.5rem rgba(0, 0, 0, 0.16)',
         button:
-          '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 8px rgba(0, 0, 0, var(--shadow-input-alpha)), inset 0px 2px 0px rgba(255, 255, 255, 0.24)',
+          '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0.25rem 0.5rem rgba(0, 0, 0, var(--shadow-input-alpha)), inset 0 0.125rem 0 rgba(255, 255, 255, 0.24)',
         'button-hover':
-          '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.24)',
+          '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.24)',
         'button-active':
-          '0px 0px 0px 2px rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.24)',
+          '0 0 0 0.125rem rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.24)',
         'secondary-button':
-          '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 0px 8px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), inset 0px 2px 0px rgba(255, 255, 255, 0.04)',
+          '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0 0.5rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), inset 0 0.125rem 0 rgba(255, 255, 255, 0.04)',
         'secondary-button-hover':
-          '0px 0px 0px 2px rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.04)',
+          '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.04)',
         'secondary-button-active':
-          '0px 0px 0px 2px rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0px 4px 12px rgba(0, 0, 0, 0.24), inset 0px 2px 0px rgba(255, 255, 255, 0.04)'
+          '0 0 0 0.125rem rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.04)'
       }
     }
   },

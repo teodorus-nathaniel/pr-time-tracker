@@ -3,6 +3,7 @@
 
   import type { PageData } from './$types';
 
+  import Button from '$lib/components/Button/index.svelte';
   import { invalidations } from '$lib/config';
   import { genAuthUrl } from '$lib/github';
 
@@ -36,7 +37,7 @@
   <p>Hello <b>{data.user.name}</b></p>
   <button on:click|preventDefault={logout} disabled={isRequesting}> Logout </button>
 {:else}
-  <button on:click|preventDefault={loginWithGithub} disabled={isRequesting}>
+  <Button size="large" variant="secondary" onClick={loginWithGithub} disabled={isRequesting}>
     Log in with Github
-  </button>
+  </Button>
 {/if}
