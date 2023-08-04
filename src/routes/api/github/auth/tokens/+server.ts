@@ -2,7 +2,7 @@ import { json, redirect } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { names, serializeCookie } from '$lib/CookieManager';
+import { names, serializeCookie } from '$lib/server/cookie';
 import { refreshUserToken } from '$lib/server/github';
 
 export const GET: RequestHandler = async ({ cookies }) => {
