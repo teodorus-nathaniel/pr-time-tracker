@@ -30,15 +30,18 @@
   };
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
-{#if data.user}
-  <p>Hello <b>{data.user.name}</b></p>
-  <button on:click|preventDefault={logout} disabled={isRequesting}> Logout </button>
-{:else}
-  <Button size="large" variant="secondary" onClick={loginWithGithub} disabled={isRequesting}>
-    <Icon name="exclamation-triangle" isOutlined class="mr-2" /> Log in with Github
-  </Button>
-{/if}
+<template lang="pug">
+  h1 Welcome to SvelteKit
+  p
+    | Visit&nbsp;
+    a(href="https://kit.svelte.dev") kit.svelte.dev&nbsp;
+    | to read the documentation
+  if data && data.user
+    p Hello
+      |
+      b {data.user.name}
+    button(on:click|preventDefault={logout} disabled={isRequesting}) Logout
+  else
+    <Button size="large" variant="secondary" onClick={loginWithGithub} disabled={isRequesting}>
+      <Icon name="exclamation-triangle" isOutlined class="mr-2" /> Log in with Github
+    </Button></template>
