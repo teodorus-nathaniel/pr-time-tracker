@@ -18,7 +18,7 @@ export interface ButtonProps extends HTMLButtonAttributes {
 }
 
 /** Icon */
-export interface IconProps extends SVGAttributes<SVGAElement> {
+export interface IconProps extends SVGAttributes<SVGElement> {
   name: IconName;
   width?: number;
   height?: number;
@@ -30,12 +30,13 @@ export interface IconSouceProps extends Omit<IconProps, 'name'> {
   src: { solid?: IconThemeSource } & { default: IconThemeSource };
 }
 
-type AllowedTags = 'path' | 'circle' | 'rect' | 'polygon' | 'polyline' | 'line';
 type IconThemeSource = {
   a: { [attribute: string]: string };
 } & {
   [tag in AllowedTags]?: Array<{ [attribute: string]: string }>;
 };
+
+type AllowedTags = 'path' | 'circle' | 'rect' | 'polygon' | 'polyline' | 'line';
 
 /** Add names of icons you use (or include) here (for stricter typing and intellisense). */
 export type IconName = 'exclamation-triangle';
