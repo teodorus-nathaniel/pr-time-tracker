@@ -7,13 +7,12 @@
   import type { IconName, IconProps } from '../types';
 
   /** siblings */
-
   import IconSource from './source.svelte';
 
   /** props */
   export let name: IconName;
 
-  /** type */
+  /** props type */
   type $$Props = IconProps;
 </script>
 

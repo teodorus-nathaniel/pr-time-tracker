@@ -14,7 +14,7 @@
   /** vars */
   const iconSrc = src[isOutlined ? 'default' : 'solid'];
 
-  /** type */
+  /** props type */
   type $$Props = IconSouceProps;
 </script>
 
