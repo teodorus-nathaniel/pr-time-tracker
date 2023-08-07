@@ -1,5 +1,4 @@
-<script lang="ts">
-  import './layout.scss';
-</script>
-
 <slot />
+
+<style lang="scss" global src="./layout.scss">
+</style>

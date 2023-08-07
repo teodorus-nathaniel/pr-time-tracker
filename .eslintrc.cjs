@@ -37,7 +37,7 @@ module.exports = {
     quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-empty-function': 'warn',
+    '@typescript-eslint/no-empty-function': 'off',
     curly: ['error', 'multi-line'],
     'no-await-in-loop': 'error',
     'no-constant-condition': [
