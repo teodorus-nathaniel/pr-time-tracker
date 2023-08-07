@@ -36,11 +36,11 @@
     }
   }
 
-  @media (prefers-color-scheme: light) {
-    :root {
-      @include colorScheme('light');
-    }
-  }
+  // @media (prefers-color-scheme: light) {
+  //   :root {
+  //     @include colorScheme('light');
+  //   }
+  // }
 
   [data-theme='dark'] {
     @include colorScheme();
