@@ -68,6 +68,5 @@
   </button>
 {/if}
 
-<style lang="scss">
-  @import './index.scss';
+<style lang="scss" src="./index.scss">
 </style>

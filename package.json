@@ -42,7 +42,6 @@
     "lint-staged": "^13.2.3",
     "ngrok": "^5.0.0-beta.2",
     "node-fetch": "^3.3.2",
-    "node-sass": "^9.0.0",
     "oauth-methods": "link:@types/@octokit/oauth-methods",
     "postcss": "^8.4.27",
     "postcss-import": "^15.1.0",

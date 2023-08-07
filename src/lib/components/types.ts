@@ -38,5 +38,5 @@ type IconThemeSource = {
 
 type AllowedTags = 'path' | 'circle' | 'rect' | 'polygon' | 'polyline' | 'line';
 
-/** Add names of icons you use (or include) here (for stricter typing and intellisense). */
-export type IconName = 'exclamation-triangle';
+/** Add names of icons you use (or include) here (for stricter typing and intellisense [name suggestions]). */
+export type IconName = 'exclamation-triangle' | '';
