@@ -1,6 +1,5 @@
 <script lang="ts">
   /** internals */
-
   import Card from '$lib/components/Card/index.svelte';
 
   /** vars */
