@@ -27,7 +27,7 @@
   <div class="p-4 flex gap-4 justify-between items-center">
     <h2 class="text-t3">holdex / holdex-venture-studio / #115</h2>
 
-    <Button variant="secondary" iconProps={{ name: 'github', width: '1.25rem' }} class="px-0" />
+    <Button variant="icon" iconProps={{ name: 'github', width: '1.25rem' }} class="px-0" />
   </div>
 
   <p class="p-4 border-y border-l4 text-h4-l font-satoshi">

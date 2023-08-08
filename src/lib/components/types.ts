@@ -4,7 +4,7 @@ import type { HTMLButtonAttributes, SVGAttributes } from 'svelte/elements';
 export interface ButtonProps extends HTMLButtonAttributes {
   text?: string | number | null;
   size?: 'small' | 'medium' | 'large';
-  variant?: 'primary' | 'secondary' | 'solo';
+  variant?: 'primary' | 'secondary' | 'solo' | 'icon';
   /** @deprecated - Use `text` instead. */
   label?: string;
   href?: string;
