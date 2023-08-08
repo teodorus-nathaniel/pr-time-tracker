@@ -43,7 +43,7 @@ export const PUT: RequestHandler = async ({ request }) => {
   const { id, reject } = await request.json();
 
   if (id === undefined || reject === undefined) {
-    throw error(StatusCode.ClientErrorBadRequest, 'id_or_approval_missing');
+    throw error(StatusCode.ClientErrorBadRequest, 'id_or_reject_missing');
   }
 
   const mongoDB = await clientPromise;
