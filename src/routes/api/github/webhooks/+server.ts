@@ -1,4 +1,5 @@
 import { error, json } from '@sveltejs/kit';
+import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -17,7 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
     request.headers.get('x-hub-signature-256') as string
   );
   if (!success) {
-    throw error(400, 'verification_failed');
+    throw error(StatusCode.ClientErrorBadRequest, 'verification_failed');
   }
 
   const eventName = request.headers.get('x-github-event') as string;
