@@ -40,5 +40,5 @@
   on:blur={onBlur}
   class={`Input ${$$restProps.class || ''}${!hasWClass ? ' w-16' : ''}${!hasHClass ? ' h-8' : ''}${
     !hasAlignmentClass ? ' text-center' : ''
-  } relative xs:w-full border border-solid border-l4 bg-l1 shadow-input rounded-xl p-2.25 text-footnote text-t1 transition-all placeholder:text-footnote placeholder:opacity-100 placeholder:text-t3 hover:border-accent1-default autofill:fill-t1 autofill:hover:text-t3 dark:bg-l2`}
+  } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl p-2.25 text-footnote text-t1 transition-all placeholder:text-footnote placeholder:opacity-100 placeholder:text-t3 hover:border-accent1-default focus:border-accent1-default autofill:fill-t1 autofill:hover:text-t3 dark:bg-l2`}
   placeholder={$$restProps.placeholder || 'H'} />
