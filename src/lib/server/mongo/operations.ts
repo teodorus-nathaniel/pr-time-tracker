@@ -23,8 +23,8 @@ type ItemCollection = {
   closedAt?: string;
   hours?: string;
   experience?: 'positive' | 'negative';
-  approval?: boolean;
-  reject?: boolean;
+  approved?: boolean;
+  rejected?: boolean;
 };
 
 async function getCollectionInfo<T extends Document>(
