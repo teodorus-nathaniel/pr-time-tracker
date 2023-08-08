@@ -3,6 +3,7 @@ import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
+import { GitHubEventName } from '$lib/constants/constants';
 import app from '$lib/server/github';
 
 import parseInstallationEvents from './installation';
@@ -23,20 +24,20 @@ export const POST: RequestHandler = async ({ request }) => {
 
   const eventName = request.headers.get('x-github-event') as string;
 
-  switch (eventName) {
-    case 'installation': {
+  switch (eventName as GitHubEventName) {
+    case GitHubEventName.INSTALATION: {
       parseInstallationEvents(body);
       break;
     }
-    case 'pull_request': {
+    case GitHubEventName.PULL_REQUEST: {
       parsePullRequestEvents(body);
       break;
     }
-    case 'pull_request_review': {
+    case GitHubEventName.PULL_REQUEST_REVIEW: {
       parsePullRequestReviewEvents(body);
       break;
     }
-    case 'issues': {
+    case GitHubEventName.ISSUES: {
       parseIssuesEvents(body);
       break;
     }
