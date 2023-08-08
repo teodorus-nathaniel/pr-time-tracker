@@ -41,4 +41,10 @@ type IconThemeSource = {
 type AllowedTags = 'path' | 'circle' | 'rect' | 'polygon' | 'polyline' | 'line';
 
 /** Add names of icons you use (or include) here (for stricter typing and intellisense [name suggestions]). */
-export type IconName = 'github' | 'exclamation-triangle' | 'hand-thumb-up' | 'hand-thumb-down' | '';
+export type IconName =
+  | 'github'
+  | 'exclamation-triangle'
+  | 'hand-thumb-up'
+  | 'hand-thumb-down'
+  | 'arrow-right-on-rectangle'
+  | '';
