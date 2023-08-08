@@ -5,8 +5,6 @@
 
   /** vars */
   let hours = '';
-
-  /** react-ibles */
 </script>
 
 <Toggle leftButtonProps={{ text: 'Unsubmitted' }} rightButtonProps={{ text: 'Submitted' }} />

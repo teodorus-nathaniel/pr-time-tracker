@@ -22,7 +22,7 @@
   $: hasAlignmentClass = /(^|\s)text-(center|left|right)/.test($$restProps.class);
 
   /** props type */
-  type $$Props = Omit<HTMLInputAttributes, 'on:blur' | 'on:change' | 'on:focus'> &
+  type $$Props = Omit<HTMLInputAttributes, 'on:blur' | 'on:change' | 'on:focus' | 'on:input'> &
     Partial<{
       onFocus: typeof onFocus;
       onInput: typeof onInput;
