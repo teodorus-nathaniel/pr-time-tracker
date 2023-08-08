@@ -23,6 +23,8 @@ type ItemCollection = {
   closedAt?: string;
   hours?: string;
   experience?: 'positive' | 'negative';
+  approval?: boolean;
+  reject?: boolean;
 };
 
 async function getCollectionInfo<T extends Document>(
@@ -35,6 +37,19 @@ async function getCollectionInfo<T extends Document>(
     return collection.findOne(filter);
   } catch (error) {
     throw new Error('Failed to getCollection:\n' + error);
+  }
+}
+
+async function getDocumentsInfo<T extends Document>(
+  db: Db,
+  collectionName: string,
+  filter: Filter<T>
+) {
+  try {
+    const collection = db.collection<T>(collectionName);
+    return collection.find(filter);
+  } catch (error) {
+    throw new Error('Failed to get documents:\n' + error);
   }
 }
 
@@ -69,4 +84,10 @@ async function findAndupdateCollectionInfo<T extends Document>(
 }
 export type { ItemCollection, Db };
 
-export { collections, getCollectionInfo, updateCollectionInfo, findAndupdateCollectionInfo };
+export {
+  collections,
+  getCollectionInfo,
+  getDocumentsInfo,
+  updateCollectionInfo,
+  findAndupdateCollectionInfo
+};
