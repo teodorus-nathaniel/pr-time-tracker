@@ -16,6 +16,9 @@
     "proxy": "npx ngrok config add-authtoken 2T98NpdbPildowmwFLNYeB1JHQi_3hNtGwx8YQC1R3jEkYsDd && ngrok http --domain=alert-seemingly-moccasin.ngrok-free.app 5173"
   },
   "dependencies": {
+    "@prettier/plugin-pug": "^3.0.0",
+    "@types/cookie": "^0.5.1",
+    "autoprefixer": "^10.4.14",
     "@octokit/oauth-methods": "^4.0.0",
     "@octokit/webhooks-types": "^7.1.0",
     "@steeze-ui/heroicons": "^2.2.3",
@@ -23,6 +26,9 @@
     "fs-extra": "^11.1.1",
     "mongodb": "^5.7.0",
     "octokit": "^3.0.0",
+    "sass": "^1.64.2",
+    "svelte-preprocess": "^5.0.4",
+    "tailwindcss": "^3.3.3",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
