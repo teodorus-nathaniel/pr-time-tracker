@@ -10,9 +10,13 @@
   import Input from '$lib/components/Input/index.svelte';
 
   /** props */
+  export let isReadonly = false;
+  export let isAdmin = false;
+  export let data = { hrs: 3, experience: 'Positive', approved: 'Yes' };
 
   /** props type */
-  type $$Props = HTMLAttributes<HTMLLIElement>;
+  type $$Props = HTMLAttributes<HTMLLIElement> &
+    Partial<{ isReadonly: boolean; isAdmin: boolean; data: typeof data }>;
 </script>
 
 <li
@@ -33,14 +37,33 @@
   <div class="p-4 text-t3 flex justify-between items-center flex-wrap gap-2 gap-y-4">
     <span class="flex gap-1.5 items-center max-w-content">
       <span>Hour:</span>
-      <Input />
+      {#if isReadonly}
+        <span class="text-t1">{data.hrs}</span>
+      {:else}
+        <Input />
+      {/if}
     </span>
 
     <span class="flex gap-1.5 items-center sm:mr-auto sm:ml-3">
       <span>Experience:</span>
-      <Toggle isReactionToggle />
+      {#if isReadonly || isAdmin}
+        <span class="text-t1">{data.experience}</span>
+      {:else}
+        <Toggle isReactionToggle />
+      {/if}
     </span>
 
-    <Button size="small" text="Submit" variant="secondary" class="w-full min-w-full sm:min-w-fit" />
+    {#if !isReadonly}
+      <Button
+        size="small"
+        text={isAdmin ? 'Approve' : 'Submit'}
+        variant={isAdmin ? 'primary' : 'secondary'}
+        class="w-full min-w-full sm:min-w-fit" />
+    {:else if data.approved && !isAdmin}
+      <div class="flex gap-1.5">
+        <span>Approved:</span>
+        <span class="text-t1">{data.approved}</span>
+      </div>
+    {/if}
   </div>
 </li>

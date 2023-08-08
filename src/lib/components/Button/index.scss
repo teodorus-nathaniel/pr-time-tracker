@@ -44,8 +44,7 @@
   &--primary {
     @apply text-t4 bg-accent1-default transition-all shadow-button;
 
-    &:not(.btn__disabled),
-    &:hover,
+    &:not(.btn__disabled):hover,
     &:focus {
       @apply bg-accent1-active dark:shadow-button-hover;
 
@@ -53,6 +52,7 @@
         @apply bg-accent1-active shadow-button-active;
       }
     }
+
     &.btn__disabled {
       @apply text-t3 bg-l3 shadow-none border border-solid border-l4 dark:bg-l3;
     }
@@ -79,6 +79,10 @@
 
       &:not(.toggle-button) {
         @apply dark:shadow-secondary-button-hover;
+      }
+
+      &:not(.active) {
+        @apply text-t1;
       }
     }
 
