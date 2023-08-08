@@ -12,3 +12,9 @@ export enum ItemType {
   PULL_REQUEST = 'pull_request',
   ISSUES = 'issue'
 }
+
+export enum ItemState {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected'
+}
