@@ -41,7 +41,8 @@
     @apply cursor-not-allowed;
   }
 
-  &--primary {
+  &--primary,
+  &--icon {
     @apply text-t4 bg-accent1-default transition-all shadow-button;
 
     &:not(.btn__disabled):hover,
@@ -58,7 +59,8 @@
     }
   }
 
-  &--secondary {
+  &--secondary,
+  &--icon {
     @apply bg-l3 transition-all;
 
     &:not(.toggle-button) {
@@ -108,7 +110,8 @@
     }
   }
 
-  &--solo {
+  &--solo,
+  &--icon {
     @apply text-t1 bg-l3 border border-solid border-l3 transition-all shadow-secondary-button;
 
     &:not(.btn__disabled) &:hover,
@@ -125,7 +128,7 @@
     }
   }
 
-  &.IconButton {
+  &--icon {
     @apply p-1.5;
   }
 }

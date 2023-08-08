@@ -24,8 +24,6 @@
   export let onClick: ButtonProps['onClick'] = undefined;
   export const getRef = () => forwardRef;
 
-  /** vars */
-
   /** funcs */
   const clickHandler = (e?: Event) => {
     if (!disabled && onClick) return onClick(e);
@@ -37,9 +35,7 @@
   $: disabledClass = disabled ? 'btn__disabled' : '';
   $: btnType = isSubmitBtn ? 'submit' : 'button';
   $: iconSize = size === 'small' ? 20 : 24;
-  $: btnClass = `btn ${variantClass} ${sizeClass} ${className || ''} ${disabledClass} ${
-    text || label || (!icon && !iconProps) || Object.keys($$slots).length ? '' : 'IconButton'
-  }`;
+  $: btnClass = `btn ${variantClass} ${sizeClass} ${className || ''} ${disabledClass}`;
 
   /** props type */
   type $$Props = ButtonProps;
