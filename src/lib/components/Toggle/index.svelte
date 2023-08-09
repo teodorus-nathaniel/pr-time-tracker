@@ -19,7 +19,7 @@
 
   /** funcs */
   const handleToggle = (button: typeof activeButton) => () => {
-    activeButton = isReactionToggle ? (activeButton === button ? '' : button) : button;
+    activeButton = isReactionToggle && activeButton === button ? '' : button;
   };
 
   /** props type */

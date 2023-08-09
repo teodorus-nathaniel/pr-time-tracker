@@ -21,7 +21,7 @@
   export let name: IconName;
 
   /** vars */
-  let src: Omit<IconSourceProps['src'], 'github'> | undefined = undefined;
+  let src: IconSourceProps['src'] | undefined = undefined;
 
   /** react-ibles */
   $: {

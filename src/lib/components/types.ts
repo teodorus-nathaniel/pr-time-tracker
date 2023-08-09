@@ -74,7 +74,7 @@ export interface CardProps {
     approved: 'Yes' | 'No' | 'Pending';
   };
   onSubmit?: (
-    _data: CardProps['data'],
-    _loading?: boolean
+    data: CardProps['data'],
+    loading?: boolean
   ) => (e?: Event | undefined) => Promise<void>;
 }
