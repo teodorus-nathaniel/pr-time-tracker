@@ -2,10 +2,13 @@
   /** Add all icons used throught out the app in this file. Follow the example with the 'exclamation-triangle' below. */
   /** externals */
   import {
+    ArrowPath,
     ArrowRightOnRectangle,
+    CheckCircle,
     ExclamationTriangle,
     HandThumbDown,
-    HandThumbUp
+    HandThumbUp,
+    XCircle
   } from '@steeze-ui/heroicons';
 
   /** types */
@@ -18,7 +21,7 @@
   export let name: IconName;
 
   /** vars */
-  let src: IconSourceProps['src'] | undefined = undefined;
+  let src: Omit<IconSourceProps['src'], 'github'> | undefined = undefined;
 
   /** react-ibles */
   $: {
@@ -34,6 +37,15 @@
         break;
       case 'arrow-right-on-rectangle':
         src = ArrowRightOnRectangle;
+        break;
+      case 'check-circle':
+        src = CheckCircle;
+        break;
+      case 'x-circle':
+        src = XCircle;
+        break;
+      case 'arrow-path':
+        src = ArrowPath;
         break;
     }
   }
