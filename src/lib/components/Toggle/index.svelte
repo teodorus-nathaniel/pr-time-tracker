@@ -15,7 +15,7 @@
   export let isReactionToggle = false;
 
   /** vars */
-  const commonClassNames = `toggle-button ${isReactionToggle ? ' !px-2 !py-1' : ''}`;
+  const commonClassNames = `toggle-button ${isReactionToggle ? '!px-2 !py-1' : '!px-2.5'}`;
   const iconProps: IconProps = { name: 'hand-thumb-up', width: '1.125rem', height: '1.125rem' };
 
   /** funcs */

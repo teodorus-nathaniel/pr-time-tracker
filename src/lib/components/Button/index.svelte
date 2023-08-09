@@ -36,6 +36,9 @@
   $: btnType = isSubmitBtn ? 'submit' : 'button';
   $: iconSize = size === 'small' ? 20 : 24;
   $: btnClass = `btn ${variantClass} ${sizeClass} ${className || ''} ${disabledClass}`;
+  $: if (variant === 'icon') {
+    $$restProps.title = $$restProps.title || $$restProps['aria-label'] || undefined;
+  }
 
   /** props type */
   type $$Props = ButtonProps;

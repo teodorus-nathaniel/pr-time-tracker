@@ -261,6 +261,15 @@ module.exports = {
           '0 0 0 0.125rem rgba(0, 0, 0, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.04)',
         'secondary-button-active':
           '0 0 0 0.125rem rgba(0, 204, 255, var(--shadow-button-ring-alpha)), 0 0.25rem 0.75rem rgba(0, 0, 0, 0.24), inset 0 0.125rem 0 rgba(255, 255, 255, 0.04)'
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.4s ease'
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 }
+        }
       }
     }
   },
