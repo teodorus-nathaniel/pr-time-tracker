@@ -18,3 +18,8 @@ export enum ItemState {
   APPROVED = 'approved',
   REJECTED = 'rejected'
 }
+
+export enum SubmitState {
+  SUBMITTED = 'true',
+  UNSUBMITTED = 'false'
+}
