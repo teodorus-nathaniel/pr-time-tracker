@@ -1,7 +1,6 @@
 <script lang="ts">
   /** types */
-  import type { ButtonProps, IconProps } from '../types';
-  import type { HTMLAttributes } from 'svelte/elements';
+  import type { ButtonProps, IconProps, ToggleProps } from '../types';
 
   /** siblings */
   import Button from '../Button/index.svelte';
@@ -23,15 +22,8 @@
     activeButton = button;
   };
 
-  /** react-ibles */
-
   /** props type */
-  type $$Props = {
-    leftButtonProps?: ButtonProps;
-    rightButtonProps?: ButtonProps;
-    activeButton?: typeof activeButton;
-    isReactionToggle?: boolean;
-  } & HTMLAttributes<HTMLSpanElement>;
+  type $$Props = ToggleProps;
 </script>
 
 <span
