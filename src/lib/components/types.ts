@@ -1,4 +1,4 @@
-import type { HTMLButtonAttributes, SVGAttributes } from 'svelte/elements';
+import type { HTMLAttributes, HTMLButtonAttributes, SVGAttributes } from 'svelte/elements';
 
 /** Button */
 export interface ButtonProps extends HTMLButtonAttributes {
@@ -48,3 +48,11 @@ export type IconName =
   | 'hand-thumb-down'
   | 'arrow-right-on-rectangle'
   | '';
+
+/** Toggle */
+export interface ToggleProps extends HTMLAttributes<HTMLSpanElement> {
+  leftButtonProps?: ButtonProps;
+  rightButtonProps?: ButtonProps;
+  activeButton?: 'left' | 'right';
+  isReactionToggle?: boolean;
+}

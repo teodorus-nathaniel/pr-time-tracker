@@ -25,5 +25,27 @@ export const invalidations = {
   user: 'custom:user'
 };
 
+interface Route {
+  path: string;
+  title: string;
+}
+
+export const routes: Record<'contributors' | 'index' | 'login' | 'prs' | 'prsArchive', Route> = {
+  contributors: {
+    path: '/contributors',
+    title: 'Contributors'
+  },
+  index: { path: '/', title: 'Autoinvoicing' },
+  login: { path: '/login', title: 'Login' },
+  prs: {
+    path: '/prs',
+    title: 'Your Closed Pull Requests'
+  },
+  prsArchive: {
+    path: '/prs/archive',
+    title: 'Your Closed Pull Requests Archive'
+  }
+};
+
 export const isDev = dev;
 export default config;
