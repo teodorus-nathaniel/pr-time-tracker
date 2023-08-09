@@ -1,4 +1,5 @@
 <script lang="ts">
+  /** externals */
   import { page } from '$app/stores';
 
   /** internals */
@@ -21,7 +22,7 @@
   /** react-ibles */
   $: route = $page.url.pathname;
   $: isBaseRoute = route === routes.contributors.path;
-  $: isArchiveRoute = route.includes('/archive');
+  $: isArchiveRoute = route.includes('archive');
 </script>
 
 <Header
