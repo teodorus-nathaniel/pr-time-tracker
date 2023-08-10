@@ -53,7 +53,8 @@
     style:width!={fixedTo || 'auto'}
     bind:this={forwardRef}
     class="{btnClass} no-underline"
-    {href}>
+    {href}
+    on:click={clickHandler}>
     <Content {icon} {iconSize} {label} {text} {iconProps} {isLoading}>
       <slot />
     </Content>

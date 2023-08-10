@@ -22,6 +22,7 @@
   export let archivePath: string | undefined = routes.prsArchive.path;
   export let breadcrumbs: string | undefined = '';
   export let toggle: ToggleProps | undefined = undefined;
+  export let activeToggleButton: ToggleProps['activeButton'] = 'left';
 
   /** vars */
   let displayAvatarFallback = false;
@@ -89,7 +90,10 @@
 
   {#if !isArchiveRoute && toggle}
     <div class="flex py-3 justify-between">
-      <Toggle leftButtonProps={toggle.leftButtonProps} rightButtonProps={toggle.rightButtonProps} />
+      <Toggle
+        leftButtonProps={toggle.leftButtonProps}
+        rightButtonProps={toggle.rightButtonProps}
+        bind:activeButton={activeToggleButton} />
 
       <Button variant="secondary" text="Archive" href={archivePath} />
     </div>
