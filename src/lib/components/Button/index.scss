@@ -114,7 +114,7 @@
   &--icon {
     @apply text-t1 bg-l3 border border-solid border-l3 transition-all shadow-secondary-button;
 
-    &:not(.btn__disabled) &:hover,
+    &:not(.btn__disabled):hover,
     &:focus {
       @apply bg-l4 text-t1 border-l4 dark:shadow-secondary-button-hover;
     }
@@ -122,13 +122,13 @@
     &.active {
       @apply bg-l3 text-t1 border-accent1-default shadow-secondary-button-active;
     }
-
-    &.btn__disabled {
-      @apply text-t3 bg-l3 border-l3 shadow-input;
-    }
   }
 
   &--icon {
     @apply p-1.5;
+  }
+
+  &.btn__disabled {
+    @apply text-t3 bg-l3 border-l3 shadow-input;
   }
 }

@@ -1,20 +1,24 @@
 <script lang="ts">
   /** externals */
   import { page } from '$app/stores';
+  import { invalidate } from '$app/navigation';
 
   /** types */
+  import type { User } from '@octokit/webhooks-types';
   import type { ToggleProps } from '../types';
 
   /** internals */
   import Button from '$lib/components/Button/index.svelte';
   import Toggle from '$lib/components/Toggle/index.svelte';
   import PageTitle from '$lib/components/PageTitle/index.svelte';
-  import { routes } from '$lib/config';
+  import { invalidations, routes } from '$lib/config';
+
+  /** siblings */
+  import { snackbar } from '../Snackbar';
 
   /** props */
   export let title = 'Home';
-  export let username = 'Sunday Power Inemesit';
-  export let avatar = 'https://avatars.githubusercontent.com/u/28790485?v=4';
+  export let user: User;
   export let archivePath: string | undefined = routes.prsArchive.path;
   export let breadcrumbs: string | undefined = '';
   export let toggle: ToggleProps | undefined = undefined;
@@ -22,6 +26,23 @@
   /** vars */
   let displayAvatarFallback = false;
   let isArchiveRoute = false;
+  let isLoading = false;
+
+  /** funcs */
+  const onLogout = async () => {
+    try {
+      isLoading = true;
+      $snackbar = { status: 'pending' };
+      await fetch('/api/github/auth/logout');
+      invalidate(invalidations.user);
+      $snackbar = { text: 'Log out successful.', status: 'successful' };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (e: any) {
+      $snackbar = { open: true, text: e.message || e, status: 'failed' };
+    } finally {
+      isLoading = false;
+    }
+  };
 
   /** react-ibles */
   $: isArchiveRoute = $page.url.pathname.includes('archive');
@@ -33,25 +54,27 @@
       <span class="grid place-items-center w-8 h-8 bg-l3 rounded-full overflow-clip text-t3">
         {#if !displayAvatarFallback}
           <img
-            src={avatar}
-            alt="Avatar"
+            src={user.avatar_url}
+            alt={user.name}
             width="32"
             height="32"
             on:error={() => (displayAvatarFallback = true)}
             class="object-cover object-center" />
         {:else}
-          {username[0]}
+          {user.name?.[0] || 'A'}
         {/if}
       </span>
 
-      <span class="text-t3">{username}</span>
+      <span class="text-t3">{user.name}</span>
     </div>
 
     <Button
       variant="icon"
       iconProps={{ name: 'arrow-right-on-rectangle' }}
       aria-label="Log out"
-      href={routes.login.path} />
+      class="h-9 w-9"
+      {isLoading}
+      onClick={onLogout} />
   </div>
 
   {#if breadcrumbs}

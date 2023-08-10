@@ -19,6 +19,7 @@
   // Used for control DOM element from outside
   export let forwardRef: ButtonProps['forwardRef'] = undefined;
   export let disabled: ButtonProps['disabled'] = false;
+  export let isLoading = false;
   export let isSubmitBtn: ButtonProps['isSubmitBtn'] = false;
   export let forwardAction: ButtonProps['forwardAction'] = () => {};
   export let onClick: ButtonProps['onClick'] = undefined;
@@ -32,7 +33,7 @@
   /** react-ibles */
   $: variantClass = `btn--${variant}`;
   $: sizeClass = `btn--${size}`;
-  $: disabledClass = disabled ? 'btn__disabled' : '';
+  $: disabledClass = disabled || isLoading ? 'btn__disabled' : '';
   $: btnType = isSubmitBtn ? 'submit' : 'button';
   $: iconSize = size === 'small' ? 20 : 24;
   $: btnClass = `btn ${variantClass} ${sizeClass} ${className || ''} ${disabledClass}`;
@@ -48,12 +49,12 @@
   <a
     {...$$restProps}
     use:forwardAction
-    {disabled}
+    disabled={disabled || isLoading}
     style:width!={fixedTo || 'auto'}
     bind:this={forwardRef}
     class="{btnClass} no-underline"
     {href}>
-    <Content {icon} {iconSize} {label} {text} {iconProps}>
+    <Content {icon} {iconSize} {label} {text} {iconProps} {isLoading}>
       <slot />
     </Content>
   </a>
@@ -61,13 +62,13 @@
   <button
     {...$$restProps}
     use:forwardAction
-    {disabled}
+    disabled={disabled || isLoading}
     style:width={fixedTo || 'auto'}
     bind:this={forwardRef}
     class={btnClass}
     type={btnType}
     on:click={clickHandler}>
-    <Content {icon} {iconSize} {label} {text} {iconProps}>
+    <Content {icon} {iconSize} {label} {text} {iconProps} {isLoading}>
       <slot />
     </Content>
   </button>

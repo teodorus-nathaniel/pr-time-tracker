@@ -16,6 +16,7 @@ export interface ButtonProps extends HTMLButtonAttributes {
   forwardRef?: HTMLButtonElement | HTMLAnchorElement;
   disabled?: boolean;
   isSubmitBtn?: boolean;
+  isLoading?: boolean;
   forwardAction?: any;
   onClick?: (e?: Event) => void;
   getRef?: () => ButtonProps['forwardRef'];
