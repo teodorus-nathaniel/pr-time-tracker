@@ -18,7 +18,7 @@
   /** react-ibles */
   $: isArchiveRoute = $page.url.pathname.includes('/archive');
   $: activeToggleButton = $page.url.hash.includes('submitted') ? 'right' : 'left';
-  $: console.log({ activeToggleButton, hash: $page.url.hash });
+  // $: console.log({ activeToggleButton, hash: $page.url.hash });
 </script>
 
 <Header

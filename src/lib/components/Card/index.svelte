@@ -23,7 +23,12 @@
     $$restProps.class || ''
   } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none dark:bg-l2 xs:w-full`}>
   <div class="p-4 flex gap-4 justify-between items-center">
-    <h2 class="text-t3">{data.org} / {data.repo} / #{data.url.split('/').slice(-1)}</h2>
+    <a
+      href={data.url.replace(/.*\/repos/, 'https://github.com').replace('pulls', 'pull')}
+      target="_blank"
+      class="link">
+      <h2 class="text-t3">{data.org} / {data.repo} / #{data.url.split('/').slice(-1)}</h2>
+    </a>
 
     <Button
       variant="icon"

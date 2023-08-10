@@ -50,7 +50,7 @@ devDependencies:
     specifier: ^2.0.0
     version: 2.1.0(@sveltejs/kit@1.22.4)
   '@sveltejs/kit':
-    specifier: ^1.20.4
+    specifier: ^1.22.4
     version: 1.22.4(svelte@4.1.2)(vite@4.4.8)
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.2.1
