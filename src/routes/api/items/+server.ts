@@ -7,13 +7,20 @@ import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import type { ItemCollection } from '$lib/server/mongo/operations';
 import { collections, getDocumentsInfo, updateCollectionInfo } from '$lib/server/mongo/operations';
-import { ItemType, ItemState, SubmitState } from '$lib/constants/constants';
+import {
+  ONE_MONTH,
+  ItemType,
+  ItemState,
+  SubmitState,
+  ArchiveState
+} from '$lib/constants/constants';
 
 const generateFilter = (
-  type: string | null,
-  state: ItemState,
-  owner: string,
-  submitted: string | null
+  type: ItemType | string | null,
+  state: ItemState = ItemState.PENDING,
+  owner: string | null,
+  submitted: SubmitState | null | string,
+  archived: ArchiveState | null | string
 ) => {
   let filter: any = {};
 
@@ -68,19 +75,28 @@ const generateFilter = (
     };
   }
 
+  if (archived === ArchiveState.ARCHIVED) {
+    const deadline = new Date();
+    deadline.setMonth(deadline.getMonth() - ONE_MONTH);
+
+    filter = {
+      ...filter,
+      closedAt: { $gte: deadline }
+    };
+  }
+
   return filter;
 };
 
 export const GET: RequestHandler = async ({ url }) => {
   const { searchParams } = url;
 
-  const type = searchParams.get('type');
-  const state = (searchParams.get('state') as ItemState) ?? ItemState.PENDING;
+  const type = searchParams.get('type') as ItemType | string | null;
+  const state = (searchParams.get('state') as ItemState | null) ?? ItemState.PENDING;
   const owner = searchParams.get('owner') as string;
-  const submitted = searchParams.get('submitted');
-
-  const filter = generateFilter(type, state, owner, submitted);
-
+  const submitted = searchParams.get('submitted') as SubmitState | string | null;
+  const archived = searchParams.get('archived') as ArchiveState | string | null;
+  const filter = generateFilter(type, state, owner, submitted, archived);
   const mongoDB = await clientPromise;
 
   const documents = await (
