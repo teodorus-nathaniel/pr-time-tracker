@@ -14,7 +14,7 @@
     class="flex items-center p-4 gap-4 relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none transition-all dark:bg-l2 xs:w-full hover:scale-102.5 focus:scale-105">
     <Avatar url={avatar_url} alt={name} size="medium" />
     <div class="grid">
-      <span class="text-white font-semibold">{name}</span>
+      <span class="text-white font-semibold">{name || username}</span>
       <span class="text-t3">{username}</span>
     </div>
   </a>
