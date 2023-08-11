@@ -27,7 +27,7 @@
   breadcrumbs={isArchiveRoute ? `${routes.prs.title} / Archive` : undefined}
   bind:activeToggleButton
   toggle={{
-    leftButtonProps: { text: 'Unsubmitted', href: '/' },
+    leftButtonProps: { text: 'Unsubmitted', href: '#' },
     rightButtonProps: { text: 'Submitted', href: '#submitted' }
   }} />
 

@@ -19,8 +19,8 @@
     <img
       src={url}
       {alt}
-      width="32"
-      height="32"
+      width={size === 'small' ? '32' : '48'}
+      height={size === 'small' ? '32' : '48'}
       on:error={() => (displayAvatarFallback = true)}
       class="object-cover object-center" />
   {:else}

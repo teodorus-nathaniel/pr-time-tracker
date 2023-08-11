@@ -208,6 +208,9 @@ module.exports = {
       mono: ['"JetBrains Mono"']
     },
     extend: {
+      scale: {
+        102.5: '1.025'
+      },
       maxWidth: {
         container: '37.75rem'
       },

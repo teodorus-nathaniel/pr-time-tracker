@@ -37,7 +37,7 @@
   toggle={isBaseRoute
     ? undefined
     : {
-        leftButtonProps: { text: 'Pending' },
-        rightButtonProps: { text: 'Approved' }
+        leftButtonProps: { text: 'Pending', href: '#' },
+        rightButtonProps: { text: 'Approved', href: '#approved' }
       }} />
 <slot />

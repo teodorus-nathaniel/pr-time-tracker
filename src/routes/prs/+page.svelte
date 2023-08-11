@@ -10,8 +10,8 @@
   /** internals */
   import PR from '$lib/components/Card/PR.svelte';
   import { snackbar } from '$lib/components/Snackbar';
-  import { ItemType, ItemState, SubmitState } from '$lib/constants/constants';
-  import { axios } from '$lib/utils/axios';
+  import { SubmitState } from '$lib/constants/constants';
+  import { axios, getPRs } from '$lib/utils/request';
   import { createEffect } from '$lib/utils';
   import type { ItemCollection } from '$lib/server/mongo/operations';
 
@@ -29,26 +29,6 @@
 
   /** funcs */
   const usePREffect = createEffect();
-
-  const getPRs = async (query: { type?: ItemType; state?: ItemState; submitted?: SubmitState }) => {
-    isLoading = true;
-
-    try {
-      const { type, submitted, state } = query;
-      const response = await axios.get<{ result: ItemCollection[] }>(
-        `/items?type=${type || ItemType.PULL_REQUEST}&owner=${
-          user.login
-        }&submitted=${submitted}&state=${state || ItemState.PENDING}`
-      );
-
-      prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] = response.data.result;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      $snackbar = { text: e.message || e, type: 'error' };
-    } finally {
-      isLoading = false;
-    }
-  };
 
   const onSubmit: CardProps['onSubmit'] = (pr) => async () => {
     $snackbar = { text: 'Please, wait...', type: 'busy' };
@@ -81,9 +61,12 @@
   $: user = data.user!;
   $: isSubmittedPrs = $page.url.hash.includes('submitted');
   $: usePREffect(async () => {
-    await getPRs({
+    isLoading = true;
+    prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] = await getPRs({
+      owner: user.login,
       submitted: isSubmittedPrs ? SubmitState.SUBMITTED : undefined
     });
+    isLoading = false;
   }, [isSubmittedPrs]);
 </script>
 
