@@ -9,6 +9,7 @@
   /** internals */
   import Header from '$lib/components/Header/index.svelte';
   import { routes } from '$lib/config';
+  import type { ContributorCollection } from '$lib/server/mongo/operations';
 
   /** props */
   export let data: LayoutData;
@@ -18,6 +19,7 @@
   let route = routes.contributors.path;
   let isBaseRoute = true;
   let user: User;
+  let contributor: ContributorCollection | undefined;
 
   /** react-ibles */
   $: route = $page.url.pathname;
@@ -29,7 +31,9 @@
 <Header
   {user}
   title={`${!isBaseRoute ? '' : routes.contributors.title}${
-    isBaseRoute ? '' : `${user.name}${isArchiveRoute ? ' ⏤ Archive' : ''}`
+    isBaseRoute
+      ? ''
+      : `${contributor?.name || $page.params.username}${isArchiveRoute ? ' ⏤ Archive' : ''}`
   }`}
   breadcrumbs={$page.params.username &&
     `Contributors / ${$page.params.username}${isArchiveRoute ? ' / Archive' : ''}`}
