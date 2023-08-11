@@ -1,5 +1,5 @@
 <script lang="ts">
-  /** externals */
+  /** types */
   import type { PageData } from './$types';
   import type { User } from '@octokit/webhooks-types';
 
@@ -9,7 +9,7 @@
   import type { ContributorCollection } from '$lib/server/mongo/operations';
   import { snackbar } from '$lib/components/Snackbar';
 
-  /** contributorops */
+  /** props */
   export let data: PageData;
 
   /** vars */
@@ -20,7 +20,7 @@
   /** funcs */
   const useContributorEffect = createEffect();
 
-  export const getContributors = async () => {
+  const getContributors = async () => {
     try {
       const response = await axios.get<{ result: ContributorCollection[] }>('/contributors');
 
