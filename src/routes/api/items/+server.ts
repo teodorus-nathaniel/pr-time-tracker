@@ -10,14 +10,14 @@ import { collections, getDocumentsInfo, updateCollectionInfo } from '$lib/server
 import { ItemType, ItemState, SubmitState } from '$lib/constants/constants';
 
 const generateFilter = (
-  type: ItemType,
+  type: string | null,
   state: ItemState,
   owner: string,
-  submitted: SubmitState
+  submitted: string | null
 ) => {
   let filter: any = {};
 
-  if (type) {
+  if (type !== 'undefined') {
     filter = {
       ...filter,
       type
@@ -49,25 +49,23 @@ const generateFilter = (
     };
   }
 
-  if (owner) {
+  if (owner !== 'undefined') {
     filter = {
       ...filter,
       owner
     };
   }
 
-  if (submitted) {
-    if (submitted === SubmitState.SUBMITTED) {
-      filter = {
-        ...filter,
-        submitted: submitted === SubmitState.SUBMITTED
-      };
-    } else {
-      filter = {
-        ...filter,
-        $or: [{ submitted: { $exists: false } }, { submitted: { $eq: false } }]
-      };
-    }
+  if (submitted === SubmitState.SUBMITTED) {
+    filter = {
+      ...filter,
+      submitted: submitted === SubmitState.SUBMITTED
+    };
+  } else {
+    filter = {
+      ...filter,
+      $or: [{ submitted: { $exists: false } }, { submitted: { $eq: false } }]
+    };
   }
 
   return filter;
@@ -76,10 +74,10 @@ const generateFilter = (
 export const GET: RequestHandler = async ({ url }) => {
   const { searchParams } = url;
 
-  const type = searchParams.get('type') as ItemType;
+  const type = searchParams.get('type');
   const state = (searchParams.get('state') as ItemState) ?? ItemState.PENDING;
   const owner = searchParams.get('owner') as string;
-  const submitted = searchParams.get('submitted') as SubmitState;
+  const submitted = searchParams.get('submitted');
 
   const filter = generateFilter(type, state, owner, submitted);
 
