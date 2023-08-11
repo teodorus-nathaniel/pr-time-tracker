@@ -1,12 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import type { PageData } from './$types';
-
   import Button from '$lib/components/Button/index.svelte';
   import { genAuthUrl } from '$lib/github';
-
-  export let data: PageData;
 
   let isLoading = false;
 </script>

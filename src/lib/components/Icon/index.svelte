@@ -55,7 +55,7 @@
 </script>
 
 {#if src}
-  <IconSource {...$$restProps} {src} class={$$restProps.class} />
+  <IconSource {...$$restProps} {src} />
 {:else if name === 'github'}
   <svg {...$$restProps} viewBox="0 0 20 20" fill="none">
     <path

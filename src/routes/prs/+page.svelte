@@ -4,6 +4,7 @@
 
   /** types */
   import type { CardProps } from '$lib/components/types';
+  import type { PageData } from './$types';
   import type { User } from '@octokit/webhooks-types';
 
   /** internals */
@@ -15,7 +16,7 @@
   import type { ItemCollection } from '$lib/server/mongo/operations';
 
   /** props */
-  export let data: { user: User };
+  export let data: PageData;
 
   /** vars */
   const prs: Record<'submitted' | 'unsubmitted', ItemCollection[]> = {
@@ -24,6 +25,7 @@
   };
   let isSubmittedPrs = false;
   let isLoading = true;
+  let user: User;
 
   /** funcs */
   const usePREffect = createEffect();
@@ -64,13 +66,14 @@
   };
 
   /** react-ibles */
+  $: user = data.user!;
   $: usePREffect(async () => {
-    if (!data.user.login) return;
+    if (!user.login) return;
     await getPRs({
-      owner: data.user.login,
+      owner: user.login,
       submitted: isSubmittedPrs ? SubmitState.SUBMITTED : undefined
     });
-  }, [data.user?.email, (isSubmittedPrs = $page.url.hash.includes('submitted'))]);
+  }, [user.email, (isSubmittedPrs = $page.url.hash.includes('submitted'))]);
 </script>
 
 <main class="max-w-container m-auto py-4 animate-fadeIn md:py-8">
