@@ -10,7 +10,6 @@
   /** internals */
   import PR from '$lib/components/Card/PR.svelte';
   import { snackbar } from '$lib/components/Snackbar';
-  import { SubmitState } from '$lib/constants/constants';
   import { axios, getPRs } from '$lib/utils/request';
   import { createEffect } from '$lib/utils';
   import type { ItemCollection } from '$lib/server/mongo/operations';
@@ -64,7 +63,7 @@
     isLoading = true;
     prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] = await getPRs({
       owner: user.login,
-      submitted: isSubmittedPrs ? SubmitState.SUBMITTED : undefined
+      submitted: isSubmittedPrs ? true : undefined
     });
     isLoading = false;
   }, [isSubmittedPrs]);
