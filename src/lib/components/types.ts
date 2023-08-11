@@ -1,5 +1,7 @@
 import type { HTMLAttributes, HTMLButtonAttributes, SVGAttributes } from 'svelte/elements';
 
+import type { ItemCollection } from '$lib/server/mongo/operations';
+
 /** Button */
 export interface ButtonProps extends HTMLButtonAttributes {
   text?: string | number | null;
@@ -16,6 +18,7 @@ export interface ButtonProps extends HTMLButtonAttributes {
   forwardRef?: HTMLButtonElement | HTMLAnchorElement;
   disabled?: boolean;
   isSubmitBtn?: boolean;
+  isLoading?: boolean;
   forwardAction?: any;
   onClick?: (e?: Event) => void;
   getRef?: () => ButtonProps['forwardRef'];
@@ -68,11 +71,7 @@ export interface CardProps {
   isReadonly?: boolean;
   isAdmin?: boolean;
   loading?: boolean;
-  data: {
-    hrs: number;
-    experience: 'Positive' | 'Negative';
-    approved: 'Yes' | 'No' | 'Pending';
-  };
+  data: ItemCollection;
   onSubmit?: (
     data: CardProps['data'],
     loading?: boolean

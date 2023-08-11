@@ -59,4 +59,21 @@
   .feed-content {
     max-width: calc(100% - #{theme('spacing.40')});
   }
+
+  .link {
+    &:hover,
+    &:focus {
+      &,
+      & * {
+        @apply text-accent1-default;
+      }
+    }
+
+    &:focus {
+      &,
+      & * {
+        @apply underline;
+      }
+    }
+  }
 }

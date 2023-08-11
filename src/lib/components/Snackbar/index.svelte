@@ -1,13 +1,14 @@
 <script lang="ts">
   /** externals */
   import { fly } from 'svelte/transition';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   /** types */
   import type { IconName, SnackbarStatus } from '../types';
 
   /** internals */
   import Icon from '$lib/components/Icon/index.svelte';
+  import { createEffect } from '$lib/utils';
 
   /** siblings */
   import { snackbar } from '.';
@@ -21,17 +22,19 @@
   let icon: IconName = '';
   let wrapperRef: HTMLElement;
   let status: typeof $snackbar.status = 'successful';
+  let hideTimeout: ReturnType<typeof setTimeout>;
 
   /** funcs */
   const handleTap = () => {
     $snackbar.open = false;
   };
 
+  const useStatusEffect = createEffect();
+
   /** lifecycles */
-  onMount(() => {
-    wrapperRef.removeEventListener('click', handleTap);
-    wrapperRef.addEventListener('click', handleTap);
-  });
+  onMount(() => wrapperRef.addEventListener('click', handleTap));
+
+  onDestroy(() => wrapperRef?.removeEventListener('click', handleTap));
 
   /** react-ibles */
   $: {
@@ -49,13 +52,14 @@
         break;
     }
   }
-  $: {
-    if (status === 'successful') {
-      setTimeout(() => {
+  $: useStatusEffect(() => {
+    if ($snackbar.status === 'successful') {
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
         snackbar.update((prev) => ({ ...prev, open: false }));
       }, 4000);
     }
-  }
+  }, [$snackbar.status]);
 </script>
 
 <div
@@ -68,7 +72,7 @@
       class="relative right-0 w-max h-fit py-2 px-3 bg-l3 rounded-xl gap-2 flex items-start bottom-0 max-w-full font-semibold border border-l5 shadow-snackbar cursor-pointer"
       transition:fly={{ y: '200%', duration: 350, opacity: 1 }}>
       <Icon name={icon} class={colors[$snackbar.status || 'successful']} />
-      <span>{$snackbar.text}</span>
+      <span>{$snackbar.text || 'Please, wait...'}</span>
     </div>
   {/if}
 </div>
