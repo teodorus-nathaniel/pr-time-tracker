@@ -23,10 +23,7 @@
   let contributor: ContributorCollection | undefined;
 
   /** react-ibles */
-  $: {
-    route = $page.url.pathname;
-    $activeTab = $page.url.searchParams.get('approval')?.includes('approved') ? 'right' : 'left';
-  }
+  $: route = $page.url.pathname;
   $: isBaseRoute = route === routes.contributors.path;
   $: isArchiveRoute = route.includes('archive');
   $: user = data.user!;
@@ -42,11 +39,11 @@
   breadcrumbs={$page.params.username &&
     `Contributors / ${$page.params.username}${isArchiveRoute ? ' / Archive' : ''}`}
   archivePath={`${routes.contributors.path}/${$page.params.username}/archive`}
-  activeToggleButton={$activeTab}
+  activeToggleButton={$activeTab.position}
   toggle={isBaseRoute
     ? undefined
     : {
-        leftButtonProps: { text: 'Pending', href: '?approval=pending' },
-        rightButtonProps: { text: 'Approved', href: '?approval=approved' }
+        leftButtonProps: { text: 'Pending' },
+        rightButtonProps: { text: 'Approved' }
       }} />
 <slot />

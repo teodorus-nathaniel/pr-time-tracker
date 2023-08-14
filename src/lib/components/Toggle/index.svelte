@@ -2,8 +2,12 @@
   /** types */
   import type { ButtonProps, IconProps, ToggleProps } from '../types';
 
+  /** internals */
+  import { createEffect } from '$lib/utils';
+
   /** siblings */
   import Button from '../Button/index.svelte';
+  import { activeTab } from '.';
 
   /** props */
   let className: ButtonProps['class'] = '';
@@ -18,9 +22,21 @@
   const iconProps: IconProps = { name: 'hand-thumb-up', width: '1.125rem', height: '1.125rem' };
 
   /** funcs */
+  const useActiveTabEffect = isReactionToggle ? undefined : createEffect();
+
   const handleToggle = (button: typeof activeButton) => () => {
     activeButton = isReactionToggle && activeButton === button ? '' : button;
   };
+
+  /** react-ibles */
+  $: if (useActiveTabEffect) {
+    useActiveTabEffect(() => {
+      $activeTab = {
+        position: activeButton,
+        title: String(activeButton === 'left' ? leftButtonProps.text : rightButtonProps.text) || ''
+      };
+    }, [activeButton]);
+  }
 
   /** props type */
   type $$Props = ToggleProps;

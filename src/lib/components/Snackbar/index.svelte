@@ -75,7 +75,7 @@
     <div
       class="relative right-0 w-max h-fit py-2 px-3 bg-l3 rounded-xl gap-2 flex items-start bottom-0 max-w-full font-semibold border border-l5 shadow-snackbar cursor-pointer"
       transition:fly={{ y: '200%', duration: 350, opacity: 1 }}>
-      <Icon name={icon} class={colors[$snackbar.type || 'success']} />
+      <Icon name={icon} class={`${colors[$snackbar.type || 'success']} min-w-[1.5rem]`} />
       <span>{$snackbar.text || 'Please, wait...'}</span>
     </div>
   {/if}
