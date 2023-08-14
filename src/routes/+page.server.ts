@@ -1,10 +1,10 @@
 import { redirect } from '@sveltejs/kit';
-import StatusCode from 'status-code-enum';
 
 import type { LayoutServerLoad } from './$types';
 
 import { routes } from '$lib/config';
+import { REDIRECT_TEMP } from '$lib/constants';
 
 export const load: LayoutServerLoad = async () => {
-  throw redirect(StatusCode.RedirectTemp, routes.prs.path);
+  throw redirect(REDIRECT_TEMP, routes.prs.path);
 };

@@ -1,7 +1,4 @@
 <script lang="ts">
-  /** externals */
-  import { page } from '$app/stores';
-
   /** types */
   import type { CardProps } from '$lib/components/types';
   import type { PageData } from './$types';
@@ -10,10 +7,10 @@
   /** internals */
   import PR from '$lib/components/Card/PR.svelte';
   import { snackbar } from '$lib/components/Snackbar';
-  import { SubmitState } from '$lib/constants/constants';
   import { axios, getPRs } from '$lib/utils/request';
   import { createEffect } from '$lib/utils';
   import type { ItemCollection } from '$lib/server/mongo/operations';
+  import { activeTab } from '$lib/components/Toggle';
 
   /** props */
   export let data: PageData;
@@ -59,12 +56,12 @@
 
   /** react-ibles */
   $: user = data.user!;
-  $: isSubmittedPrs = $page.url.hash.includes('submitted');
+  $: isSubmittedPrs = $activeTab === 'right';
   $: usePREffect(async () => {
     isLoading = true;
     prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] = await getPRs({
       owner: user.login,
-      submitted: isSubmittedPrs ? SubmitState.SUBMITTED : undefined
+      submitted: isSubmittedPrs ? true : undefined
     });
     isLoading = false;
   }, [isSubmittedPrs]);
