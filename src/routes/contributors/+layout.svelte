@@ -10,6 +10,7 @@
   import Header from '$lib/components/Header/index.svelte';
   import { routes } from '$lib/config';
   import type { ContributorCollection } from '$lib/server/mongo/operations';
+  import { activeTab } from '$lib/components/Toggle';
 
   /** props */
   export let data: LayoutData;
@@ -22,7 +23,10 @@
   let contributor: ContributorCollection | undefined;
 
   /** react-ibles */
-  $: route = $page.url.pathname;
+  $: {
+    route = $page.url.pathname;
+    $activeTab = $page.url.searchParams.get('approval')?.includes('approved') ? 'right' : 'left';
+  }
   $: isBaseRoute = route === routes.contributors.path;
   $: isArchiveRoute = route.includes('archive');
   $: user = data.user!;
@@ -38,10 +42,11 @@
   breadcrumbs={$page.params.username &&
     `Contributors / ${$page.params.username}${isArchiveRoute ? ' / Archive' : ''}`}
   archivePath={`${routes.contributors.path}/${$page.params.username}/archive`}
+  activeToggleButton={$activeTab}
   toggle={isBaseRoute
     ? undefined
     : {
-        leftButtonProps: { text: 'Pending', href: '#' },
-        rightButtonProps: { text: 'Approved', href: '#approved' }
+        leftButtonProps: { text: 'Pending', href: '?approval=pending' },
+        rightButtonProps: { text: 'Approved', href: '?approval=approved' }
       }} />
 <slot />
