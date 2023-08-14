@@ -1,6 +1,7 @@
 <script lang="ts">
   /** internals */
   import Avatar from '$lib/components/Avatar/index.svelte';
+  // for trigger deploy 1
 
   /** props */
   export let name = '';
