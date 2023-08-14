@@ -1,34 +1,40 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
-  /** internals */
+  /** types */
   import type { User } from '@octokit/webhooks-types';
-  import type { ToggleProps } from '$lib/components/types';
+  import type { LayoutData } from './$types';
 
+  /** internals */
   import Header from '$lib/components/Header/index.svelte';
   import { routes } from '$lib/config';
+  import { activeTab } from '$lib/components/Toggle';
+
+  /** siblings */
 
   /** props */
-  export let data: { user: User };
+  export let data: LayoutData;
 
   /** vars */
   let isArchiveRoute = false;
-  let activeToggleButton: ToggleProps['activeButton'] = 'left';
+  let user: User;
 
   /** react-ibles */
-  $: isArchiveRoute = $page.url.pathname.includes('/archive');
-  $: activeToggleButton = $page.url.hash.includes('submitted') ? 'right' : 'left';
-  // $: console.log({ activeToggleButton, hash: $page.url.hash });
+  $: {
+    $activeTab = $page.url.searchParams.get('submitted')?.includes('true') ? 'right' : 'left';
+    user = data.user!;
+    isArchiveRoute = $page.url.pathname.includes('/archive');
+  }
 </script>
 
 <Header
-  user={data.user}
+  {user}
   title={routes[isArchiveRoute ? 'prsArchive' : 'prs'].title}
   breadcrumbs={isArchiveRoute ? `${routes.prs.title} / Archive` : undefined}
-  bind:activeToggleButton
+  activeToggleButton={$activeTab}
   toggle={{
-    leftButtonProps: { text: 'Unsubmitted', href: '/' },
-    rightButtonProps: { text: 'Submitted', href: '#submitted' }
+    leftButtonProps: { text: 'Unsubmitted', href: '?submitted=false' },
+    rightButtonProps: { text: 'Submitted', href: '?submitted=true' }
   }} />
 
 <slot />

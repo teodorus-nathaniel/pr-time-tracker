@@ -1,7 +1,12 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { page } from '$app/stores';
 
   import Snackbar from '$lib/components/Snackbar/index.svelte';
+  import { snackbar } from '$lib/components/Snackbar/index';
+
+  onMount(() => ($snackbar.open = false));
 </script>
 
 <div
