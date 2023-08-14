@@ -10,4 +10,3 @@
     <Card isAdmin /> -->
   </ul>
 </main>
-$lib/constants
