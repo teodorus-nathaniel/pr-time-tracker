@@ -27,7 +27,7 @@
 
   /** react-ibles */
   $: if (!data.contributor && globalThis.history) {
-    // globalThis.history.back();
+    globalThis.history.back();
     $snackbar = { text: data.message, type: 'error' };
   }
   $: isApprovedTab = $activeTab.position === 'right';
