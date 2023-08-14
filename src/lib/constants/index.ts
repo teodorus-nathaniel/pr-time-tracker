@@ -2,6 +2,10 @@ export const ONE_MONTH = 1;
 export const HOUR_IN_MILISECOND = 3600000;
 export const FIXED_DECIMAL_HOUR = 2;
 
+export const REDIRECT_TEMP = 307;
+export const SUCCESS_OK = 200;
+export const BAD_REQUEST = 400;
+
 export enum GitHubEventName {
   INSTALATION = 'installation',
   PULL_REQUEST = 'pull_request',

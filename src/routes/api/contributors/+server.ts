@@ -1,9 +1,8 @@
 import { json } from '@sveltejs/kit';
-import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { ItemState, ItemType } from '$lib/constants/constants';
+import { ItemState, ItemType, SUCCESS_OK } from '$lib/constants';
 import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import { Collections, getDocumentsInfo, getAggregation } from '$lib/server/mongo/operations';
@@ -89,5 +88,5 @@ export const GET: RequestHandler = async ({ url }) => {
     ).toArray();
   }
 
-  return json({ message: 'success', result }, { status: StatusCode.SuccessOK });
+  return json({ message: 'success', result }, { status: SUCCESS_OK });
 };
