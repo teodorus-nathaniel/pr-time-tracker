@@ -1,7 +1,7 @@
 import ax from 'axios';
 
 import { snackbar } from '$lib/components/Snackbar';
-import { ItemState, ItemType } from '$lib/constants/constants';
+import { ItemState, ItemType } from '$lib/constants';
 import type { ItemCollection } from '$lib/server/mongo/operations';
 
 export const axios = ax.create({

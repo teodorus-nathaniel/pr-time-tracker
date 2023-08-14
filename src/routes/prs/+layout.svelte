@@ -8,24 +8,15 @@
   import Header from '$lib/components/Header/index.svelte';
   import { routes } from '$lib/config';
   import { activeTab } from '$lib/components/Toggle';
-  import { createEffect } from '$lib/utils';
 
   /** props */
   export let data: LayoutData;
 
   /** vars */
   let isArchiveRoute = false;
-  let isSubmittedTab = false;
-
-  /** funcs */
-  const useParamsEffect = createEffect();
 
   /** react-ibles */
-  $: isSubmittedTab = Boolean($page.url.searchParams.get('submitted')?.includes('true'));
-  $: useParamsEffect(() => {
-    $activeTab.position = isSubmittedTab ? 'right' : 'left';
-    isArchiveRoute = $page.url.pathname.includes('/archive');
-  }, [isSubmittedTab]);
+  $: isArchiveRoute = $page.url.pathname.includes('/archive');
 </script>
 
 <Header

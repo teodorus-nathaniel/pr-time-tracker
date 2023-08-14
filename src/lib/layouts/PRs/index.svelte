@@ -75,7 +75,7 @@
       {/key}
     {:else}
       <li class="text-t3">
-        {#if !$activeTab.title}
+        {#if !$activeTab.title || !owner}
           {$page.data.message || 'Please, wait...'}
         {:else if isLoading || isLoading === undefined}
           Loading {isContributorContext

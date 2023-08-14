@@ -10,7 +10,7 @@
   import PRs from '$lib/layouts/PRs/index.svelte';
   import type { ItemCollection } from '$lib/server/mongo/operations';
   import { activeTab } from '$lib/components/Toggle';
-  import { ItemState } from '$lib/constants/constants';
+  import { ItemState } from '$lib/constants';
 
   /** props */
   export let data: PageData;
@@ -27,7 +27,7 @@
 
   /** react-ibles */
   $: if (!data.contributor && globalThis.history) {
-    globalThis.history.back();
+    // globalThis.history.back();
     $snackbar = { text: data.message, type: 'error' };
   }
   $: isApprovedTab = $activeTab.position === 'right';

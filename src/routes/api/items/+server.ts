@@ -1,5 +1,4 @@
 import { error, json } from '@sveltejs/kit';
-import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -12,8 +11,10 @@ import {
   ItemType,
   ItemState,
   SubmitState,
-  ArchiveState
-} from '$lib/constants/constants';
+  ArchiveState,
+  SUCCESS_OK,
+  BAD_REQUEST
+} from '$lib/constants';
 
 const generateFilter = (
   type: ItemType | string | null,
@@ -105,14 +106,14 @@ export const GET: RequestHandler = async ({ url }) => {
     await getDocumentsInfo(mongoDB.db(config.mongoDBName), Collections.ITEMS, filter)
   ).toArray();
 
-  return json({ message: 'success', result: documents }, { status: StatusCode.SuccessOK });
+  return json({ message: 'success', result: documents }, { status: SUCCESS_OK });
 };
 
 export const POST: RequestHandler = async ({ request }) => {
   const requestBody: ItemCollection = await request.json();
 
   if (requestBody.id === undefined) {
-    throw error(StatusCode.ClientErrorBadRequest, 'id_is_missing');
+    throw error(BAD_REQUEST, 'id_is_missing');
   }
 
   const mongoDB = await clientPromise;
@@ -123,5 +124,5 @@ export const POST: RequestHandler = async ({ request }) => {
     { $set: { ...requestBody } }
   );
 
-  return json({ message: 'success', result: res }, { status: StatusCode.SuccessOK });
+  return json({ message: 'success', result: res }, { status: SUCCESS_OK });
 };
