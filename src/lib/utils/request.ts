@@ -30,9 +30,11 @@ export const getPRs = async (query: PRsQuery, noCache = false) => {
   try {
     const { owner, type, submitted, state, archived } = query;
     const response = await axios.get<{ result: ItemCollection[] }>(
-      `/items?type=${type || ItemType.PULL_REQUEST}&owner=${owner}&submitted=${submitted}&state=${
-        state || ItemState.PENDING
-      }&archived=${archived}${noCache ? `&cache_bust=${String(Math.random()).slice(2, 10)}` : ''}`
+      `/items?type=${
+        type || ItemType.PULL_REQUEST
+      }&owner=${owner}&submitted=${submitted}&state=${state}&archived=${archived}${
+        noCache ? `&cache_bust=${String(Math.random()).slice(2, 10)}` : ''
+      }`
     );
 
     return response.data.result;

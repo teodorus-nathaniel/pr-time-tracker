@@ -4,7 +4,6 @@
 
   /** types */
   import type { LayoutData } from './$types';
-  import type { User } from '@octokit/webhooks-types';
 
   /** internals */
   import Header from '$lib/components/Header/index.svelte';
@@ -19,18 +18,15 @@
   let isArchiveRoute = false;
   let route = routes.contributors.path;
   let isBaseRoute = true;
-  let user: User;
   let contributor: ContributorCollection | undefined;
 
   /** react-ibles */
   $: route = $page.url.pathname;
   $: isBaseRoute = route === routes.contributors.path;
   $: isArchiveRoute = route.includes('archive');
-  $: user = data.user!;
 </script>
 
 <Header
-  {user}
   title={`${!isBaseRoute ? '' : routes.contributors.title}${
     isBaseRoute
       ? ''

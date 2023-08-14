@@ -71,7 +71,7 @@
     {#each prs as pr}
       <!-- Force component destroy/re-render to get updated `pr` object values -->
       {#key invalidateCache ? pr : ''}
-        <PR data={pr} {onSubmit} isAdmin={isContributorContext || true} isReadonly={pr.approved} />
+        <PR data={pr} {onSubmit} isAdmin={isContributorContext} isReadonly={pr.approved} />
       {/key}
     {:else}
       <li class="text-t3">

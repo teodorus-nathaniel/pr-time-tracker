@@ -19,13 +19,13 @@
 
   /** props */
   export let title = 'Home';
-  export let user: User;
   export let archivePath: string | undefined = routes.prsArchive.path;
   export let breadcrumbs: string | undefined = '';
   export let toggle: ToggleProps | undefined = undefined;
   export let activeToggleButton: ToggleProps['activeButton'] = 'left';
 
   /** vars */
+  const user = $page.data.user as User;
   let isArchiveRoute = false;
   let isLoading = false;
 

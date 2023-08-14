@@ -34,7 +34,9 @@
   {...$$restProps}
   class={`Card ${
     $$restProps.class || ''
-  } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none animate-fadeIn dark:bg-l2 xs:w-full`}>
+  } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none animate-fadeIn  ${
+    data.approved ? 'opacity-80' : ''
+  } dark:bg-l2 xs:w-full`}>
   <div class="p-4 flex gap-4 justify-between items-center">
     <a
       href={data.url.replace(/.*\/repos/, 'https://github.com').replace('pulls', 'pull')}

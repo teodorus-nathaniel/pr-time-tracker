@@ -17,7 +17,7 @@ import {
 
 const generateFilter = (
   type: ItemType | string | null,
-  state: ItemState = ItemState.PENDING,
+  state: ItemState | string | null = ItemState.PENDING,
   owner: string | null,
   submitted: SubmitState | null | string,
   archived: ArchiveState | null | string
@@ -31,29 +31,31 @@ const generateFilter = (
     };
   }
 
-  if (state === ItemState.PENDING) {
-    filter = {
-      ...filter,
-      $and: [
-        {
-          $or: [
-            { [ItemState.APPROVED]: { $exists: false } },
-            { [ItemState.APPROVED]: { $eq: false } }
-          ]
-        },
-        {
-          $or: [
-            { [ItemState.REJECTED]: { $exists: false } },
-            { [ItemState.REJECTED]: { $eq: false } }
-          ]
-        }
-      ]
-    };
-  } else {
-    filter = {
-      ...filter,
-      [state]: true
-    };
+  if (state !== 'undefined') {
+    if (state === ItemState.PENDING) {
+      filter = {
+        ...filter,
+        $and: [
+          {
+            $or: [
+              { [ItemState.APPROVED]: { $exists: false } },
+              { [ItemState.APPROVED]: { $eq: false } }
+            ]
+          },
+          {
+            $or: [
+              { [ItemState.REJECTED]: { $exists: false } },
+              { [ItemState.REJECTED]: { $eq: false } }
+            ]
+          }
+        ]
+      };
+    } else {
+      filter = {
+        ...filter,
+        [state as ItemState]: true
+      };
+    }
   }
 
   if (owner !== 'undefined') {
@@ -92,7 +94,7 @@ export const GET: RequestHandler = async ({ url }) => {
   const { searchParams } = url;
 
   const type = searchParams.get('type') as ItemType | string | null;
-  const state = (searchParams.get('state') as ItemState | null) ?? ItemState.PENDING;
+  const state = searchParams.get('state') as ItemState | null;
   const owner = searchParams.get('owner') as string;
   const submitted = searchParams.get('submitted') as SubmitState | string | null;
   const archived = searchParams.get('archived') as ArchiveState | string | null;
