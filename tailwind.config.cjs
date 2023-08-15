@@ -203,9 +203,9 @@ module.exports = {
       ]
     },
     fontFamily: {
-      inter: ['"Inter"'],
-      satoshi: ['"Satoshi"'],
-      mono: ['"JetBrains Mono"']
+      inter: ['"Inter"', 'sans-serif'],
+      satoshi: ['"Satoshi"', 'sans-serif'],
+      mono: ['"JetBrains Mono"', 'sans-serif']
     },
     extend: {
       scale: {
