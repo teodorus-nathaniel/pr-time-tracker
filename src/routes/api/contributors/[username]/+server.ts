@@ -6,26 +6,43 @@ import type { RequestHandler } from '@sveltejs/kit';
 import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
-import { ItemState, ItemType } from '$lib/constants';
+import { ItemState } from '$lib/constants';
 
-export const GET: RequestHandler = async ({ params, fetch }) => {
+export const GET: RequestHandler = async ({ params }) => {
   try {
     const mongoClient = await clientPromise;
     const collection = mongoClient
       .db(config.mongoDBName)
       .collection<ContributorCollection>(Collections.CONTRIBUTORS);
-    const contributor = await collection.findOne({ login: params.username });
+    const [contributor] = await collection
+      .aggregate([
+        {
+          $match: { login: params.username }
+        },
+        {
+          $lookup: {
+            from: Collections.ITEMS,
+            localField: 'login',
+            foreignField: 'owner',
+            pipeline: [
+              {
+                $match: {
+                  $or: [
+                    { [ItemState.APPROVED]: { $exists: false } },
+                    { [ItemState.APPROVED]: { $eq: false } }
+                  ]
+                }
+              }
+            ],
+            as: 'prs'
+          }
+        }
+      ])
+      .toArray();
 
     if (!contributor) throw Error(`Contributor, "${params.username}", not found.`);
 
-    const prsResponse = await fetch(
-      `/api/items?type=${ItemType.PULL_REQUEST}&owner=${contributor.login}&state=${ItemState.PENDING}`
-    );
-
-    return json(
-      { message: 'success', result: { ...contributor, prs: (await prsResponse.json()).result } },
-      { status: StatusCode.SuccessOK }
-    );
+    return json({ message: 'success', result: contributor }, { status: StatusCode.SuccessOK });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     return json(
