@@ -6,8 +6,9 @@ import type { RequestHandler } from '@sveltejs/kit';
 import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
+import { ItemState, ItemType } from '$lib/constants';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, fetch }) => {
   try {
     const mongoClient = await clientPromise;
     const collection = mongoClient
@@ -17,7 +18,14 @@ export const GET: RequestHandler = async ({ params }) => {
 
     if (!contributor) throw Error(`Contributor, "${params.username}", not found.`);
 
-    return json({ message: 'success', result: contributor }, { status: StatusCode.SuccessOK });
+    const prsResponse = await fetch(
+      `/api/items?type=${ItemType.PULL_REQUEST}&owner=${contributor.login}&state=${ItemState.PENDING}`
+    );
+
+    return json(
+      { message: 'success', result: { ...contributor, prs: (await prsResponse.json()).result } },
+      { status: StatusCode.SuccessOK }
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     return json(

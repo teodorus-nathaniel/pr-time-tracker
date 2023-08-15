@@ -1,6 +1,9 @@
 <script lang="ts">
   /** externals */
+  import { onMount } from 'svelte';
+
   import { page } from '$app/stores';
+  import { preloadCode } from '$app/navigation';
 
   /** types */
   import type { LayoutData } from './$types';
@@ -19,6 +22,12 @@
   let route = routes.contributors.path;
   let isBaseRoute = true;
   let contributor: ContributorCollection | undefined;
+
+  onMount(() => {
+    setTimeout(() => {
+      preloadCode('/contributors/*');
+    });
+  });
 
   /** react-ibles */
   $: route = $page.url.pathname;
