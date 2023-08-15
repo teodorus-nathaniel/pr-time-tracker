@@ -27,4 +27,5 @@ if (process.env.NODE_ENV === 'development') {
   client = new MongoClient(config.mongoDBUri);
   clientPromise = client.connect();
 }
+
 export default clientPromise;

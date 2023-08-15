@@ -34,7 +34,9 @@
   {...$$restProps}
   class={`Card ${
     $$restProps.class || ''
-  } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none dark:bg-l2 xs:w-full`}>
+  } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none animate-fadeIn  ${
+    data.approved ? 'opacity-80' : ''
+  } dark:bg-l2 xs:w-full`}>
   <div class="p-4 flex gap-4 justify-between items-center">
     <a
       href={data.url.replace(/.*\/repos/, 'https://github.com').replace('pulls', 'pull')}
@@ -66,8 +68,13 @@
 
       data.experience = activeReactionButton === 'left' ? 'positive' : 'negative';
       loading = true;
-      await onSubmit(data)(e);
-      data.submitted = true;
+
+      const payload = isAdmin
+        ? { id: data.id, approved: !data.approved }
+        : { id: data.id, hours: data.hours, experience: data.experience, submitted: true };
+      const result = await onSubmit(data, payload, data.submitted)(e);
+
+      if (result) data = result;
       loading = false;
       isReadonly = Boolean(data.approved);
     }}>
@@ -76,7 +83,7 @@
       {#if isReadonly}
         <span class="text-t1">{data.hours}</span>
       {:else}
-        <Input required min="0.5" bind:value={data.hours} disabled={loading} />
+        <Input required min="0.5" bind:value={data.hours} disabled={loading || isAdmin} />
       {/if}
     </span>
 
@@ -97,15 +104,17 @@
         <span class="text-t1 capitalize">{data.approved || 'Pending'}</span>
       </div>
     {/if}
-    {#if !isReadonly}
+    {#if !isReadonly || isAdmin}
       <Button
         isSubmitBtn
         size="small"
         text={isAdmin
-          ? `Approv${loading ? 'ing...' : 'e'}`
+          ? `${data.approved ? 'Disapprov' : 'Approv'}${loading ? 'ing...' : 'e'}`
           : `${data.submitted ? 'Re-' : ''}Submit${loading ? 'ting...' : ''}`}
-        variant={isAdmin ? 'primary' : 'secondary'}
-        class="w-full min-w-full ml-auto sm:min-w-fit"
+        variant={isAdmin ? (data.approved ? 'secondary' : 'primary') : 'secondary'}
+        class="w-full min-w-full ml-auto {data.approved && !loading
+          ? '!text-neg'
+          : ''} sm:min-w-fit"
         disabled={loading} />
     {/if}
   </form>

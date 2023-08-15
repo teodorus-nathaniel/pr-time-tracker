@@ -1,14 +1,9 @@
 <script lang="ts">
   /** types */
-  import type { CardProps } from '$lib/components/types';
   import type { PageData } from './$types';
-  import type { User } from '@octokit/webhooks-types';
 
   /** internals */
-  import PR from '$lib/components/Card/PR.svelte';
-  import { snackbar } from '$lib/components/Snackbar';
-  import { axios, getPRs } from '$lib/utils/request';
-  import { createEffect } from '$lib/utils';
+  import PRs from '$lib/layouts/PRs/index.svelte';
   import type { ItemCollection } from '$lib/server/mongo/operations';
   import { activeTab } from '$lib/components/Toggle';
 
@@ -21,64 +16,13 @@
     unsubmitted: []
   };
   let isSubmittedPrs = false;
-  let isLoading = true;
-  let user: User;
-
-  /** funcs */
-  const usePREffect = createEffect();
-
-  const onSubmit: CardProps['onSubmit'] = (pr) => async () => {
-    $snackbar = { text: 'Please, wait...', type: 'busy' };
-
-    try {
-      await axios.post<{ result: ItemCollection }>(`/items`, {
-        id: pr.id,
-        hours: pr.hours,
-        experience: pr.experience,
-        submitted: true
-      } as Partial<ItemCollection>);
-      prs.unsubmitted = prs.unsubmitted.filter((submit) => submit.id !== pr.id);
-      if (!pr.submitted) prs.submitted = [pr].concat(prs.submitted);
-      $snackbar = {
-        text: `Successfully submitted #${pr.number} with "${pr.hours} hour${
-          Number(pr.hours) === 1 ? '' : 's'
-        }" of efficiency.`,
-        type: 'success'
-      };
-
-      return pr;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      $snackbar = { text: e.message || e, type: 'error' };
-      return null;
-    }
-  };
 
   /** react-ibles */
-  $: user = data.user!;
-  $: isSubmittedPrs = $activeTab === 'right';
-  $: usePREffect(async () => {
-    isLoading = true;
-    prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] = await getPRs({
-      owner: user.login,
-      submitted: isSubmittedPrs ? true : undefined
-    });
-    isLoading = false;
-  }, [isSubmittedPrs]);
+  $: isSubmittedPrs = $activeTab.position === 'right';
 </script>
 
-<main class="max-w-container m-auto py-4 animate-fadeIn md:py-8">
-  <ul class="grid gap-4 md:gap-8">
-    {#each prs[isSubmittedPrs ? 'submitted' : 'unsubmitted'] as pr}
-      <PR data={pr} {onSubmit} />
-    {:else}
-      <li class="text-t3">
-        {#if isLoading}
-          Loading your {isSubmittedPrs ? '' : 'un'}submitted (Closed) Pull Requests...
-        {:else}
-          You don't have any ({isSubmittedPrs ? '' : 'un'}submitted) closed pull requests.
-        {/if}
-      </li>
-    {/each}
-  </ul>
-</main>
+<PRs
+  bind:prs={prs[isSubmittedPrs ? 'submitted' : 'unsubmitted']}
+  query={{
+    submitted: isSubmittedPrs ? true : undefined
+  }} />

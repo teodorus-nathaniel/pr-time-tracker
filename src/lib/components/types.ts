@@ -74,6 +74,8 @@ export interface CardProps {
   loading?: boolean;
   data: ItemCollection & { number?: number };
   onSubmit?: (
-    data: CardProps['data']
+    data: CardProps['data'],
+    payload: Partial<CardProps['data']>,
+    isUpdate?: boolean
   ) => (e?: Event | undefined) => Promise<CardProps['data'] | null>;
 }

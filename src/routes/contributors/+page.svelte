@@ -50,7 +50,7 @@
         {#if isLoading}
           Loading contributors...
         {:else}
-          There are no contributors.
+          There are currently no contributors.
         {/if}
       </li>
     {/each}
