@@ -1,5 +1,6 @@
 <script lang="ts">
-  /** types */ import type { ButtonProps } from '../types';
+  /** types */
+  import type { ButtonProps } from '../types';
 
   /** internals */
   import { appIsReady } from '$lib/utils';
