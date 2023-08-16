@@ -7,6 +7,7 @@ import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
 import { MAX_DATA_CHUNK } from '$lib/constants';
+import { ResponseHeadersInit } from '$lib/config';
 
 export const GET: RequestHandler = async () => {
   try {
@@ -16,7 +17,10 @@ export const GET: RequestHandler = async () => {
       .collection<ContributorCollection>(Collections.CONTRIBUTORS);
     const contributors = await collection.find().limit(MAX_DATA_CHUNK).toArray();
 
-    return json({ message: 'success', result: contributors }, { status: StatusCode.SuccessOK });
+    return json(
+      { message: 'success', result: contributors },
+      { status: StatusCode.SuccessOK, headers: ResponseHeadersInit }
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     return json(

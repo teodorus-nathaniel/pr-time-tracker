@@ -24,7 +24,7 @@
   onMount(async () => {
     if (!data.user) return;
     // fetch `submitted` PRs initially since `unsubmitted`s are fetched on server (for faster navigation/load)
-    prs.submitted = await getPRs({ submitted: true, owner: data.user.login }, true);
+    prs.submitted = await getPRs({ submitted: true, owner: data.user.login });
   });
 
   onDestroy(() => ($activeTab.position = 'left'));

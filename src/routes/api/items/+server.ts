@@ -30,9 +30,7 @@ const generateFilter = (params: URLSearchParams) => {
   const submitted = params.get('submitted') as SubmitState | string | null;
   const archived = params.get('archived') as ArchiveState | string | null;
   const count = params.get('count');
-  const filter: Partial<FilterProps> = {
-    count: count === 'undefined' ? undefined : Number(count)
-  };
+  const filter: Partial<FilterProps> = {};
 
   if (type !== 'undefined') {
     filter.type = type;
@@ -76,16 +74,16 @@ const generateFilter = (params: URLSearchParams) => {
     filter.closedAt = { $gte: deadline };
   }
 
-  return filter;
+  return { filter, count: count === 'undefined' ? undefined : Number(count) };
 };
 
 export const GET: RequestHandler = async ({ url }) => {
   const { searchParams } = url;
 
-  const filter = generateFilter(searchParams);
+  const { filter, count } = generateFilter(searchParams);
   const mongoDB = await clientPromise;
   const documents = await (
-    await getDocumentsInfo(mongoDB.db(config.mongoDBName), Collections.ITEMS, filter)
+    await getDocumentsInfo(mongoDB.db(config.mongoDBName), Collections.ITEMS, filter, count)
   ).toArray();
 
   return json({ message: 'success', result: documents }, { status: SUCCESS_OK });

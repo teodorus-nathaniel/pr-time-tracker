@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ fetch, depends, parent }) => {
 
   return {
     prs: data.result,
-    message: data.error && data.message,
+    message: data.error ? data.message : '',
     error: data.error
   };
 };
