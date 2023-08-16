@@ -6,6 +6,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
+import { MAX_DATA_CHUNK } from '$lib/constants';
 
 export const GET: RequestHandler = async () => {
   try {
@@ -13,7 +14,7 @@ export const GET: RequestHandler = async () => {
     const collection = mongoClient
       .db(config.mongoDBName)
       .collection<ContributorCollection>(Collections.CONTRIBUTORS);
-    const contributors = await collection.find().toArray();
+    const contributors = await collection.find().limit(MAX_DATA_CHUNK).toArray();
 
     return json({ message: 'success', result: contributors }, { status: StatusCode.SuccessOK });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
