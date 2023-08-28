@@ -52,7 +52,7 @@
       aria-label="GitHub" />
   </div>
 
-  <p class="p-4 border-y border-l4 text-h4-l font-satoshi">Problem: [Placeholder]</p>
+  <p class="p-4 border-y border-l4 text-h4-l font-satoshi">{data.title}</p>
 
   <form
     class="p-4 text-t3 flex justify-between items-center flex-wrap gap-2 gap-y-4"
