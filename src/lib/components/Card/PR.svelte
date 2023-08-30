@@ -1,10 +1,7 @@
 <script lang="ts">
-  /** externals */
-
-  /** types */
+  /** deps */ 
   import type { CardProps, ToggleProps } from '../types';
 
-  /** internals */
   import Button from '$lib/components/Button/index.svelte';
   import Toggle from '$lib/components/Toggle/index.svelte';
   import Input from '$lib/components/Input/index.svelte';
@@ -72,7 +69,11 @@
       const payload = isAdmin
         ? { id: data.id, approved: !data.approved }
         : { id: data.id, hours: data.hours, experience: data.experience, submitted: true };
-      const result = await onSubmit(data, payload, data.submitted)(e);
+      const result = await onSubmit(
+        data,
+        payload,
+        isAdmin ? payload.approved === data.approved : data.submitted
+      )(e);
 
       if (result) data = result;
       loading = false;
