@@ -4,7 +4,11 @@ import type { ObjectId, Document, ModifyResult } from 'mongodb';
 
 import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
-import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
+import {
+  Collections,
+  type ContributorCollection,
+  type ItemCollection
+} from '$lib/server/mongo/operations';
 import type {
   PullRequest,
   User,
@@ -35,14 +39,12 @@ const getContributorInfo = (user: User) => ({
 const addContributorIfNotExists = async (prId: number, contributorId: ObjectId | undefined) => {
   const mongoDB = await clientPromise;
 
-  const contributorIds = await mongoDB
-    .db(config.mongoDBName)
-    .collection(Collections.ITEMS)
-    .findOne({
+  const contributorIds = (
+    await mongoDB.db(config.mongoDBName).collection(Collections.ITEMS).findOne({
       type: ItemType.PULL_REQUEST,
       id: prId
     })
-    .then((d) => d?.contributorsIds);
+  )?.contributorIds;
 
   if (contributorIds === undefined) {
     return [contributorId];
