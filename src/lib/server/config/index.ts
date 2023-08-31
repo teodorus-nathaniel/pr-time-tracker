@@ -3,7 +3,10 @@ import {
   WEBHOOK_SECRET,
   GITHUB_APP_ID,
   GITHUB_PRIVATE_KEY,
-  GITHUB_CLIENT_SECRET
+  GITHUB_CLIENT_SECRET,
+  GITHUB_TOKEN,
+  TRIGGER_API_KEY,
+  TRIGGER_API_URL
 } from '$env/static/private';
 
 type Config = {
@@ -14,6 +17,11 @@ type Config = {
     appId: string;
     clientSecret: string;
     privateKey: string;
+    token: string;
+  };
+  triggerDev: {
+    apiKey: string;
+    apiUrl: string;
   };
 };
 
@@ -24,7 +32,12 @@ const config: Config = {
   github: {
     appId: GITHUB_APP_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    privateKey: GITHUB_PRIVATE_KEY
+    privateKey: GITHUB_PRIVATE_KEY,
+    token: GITHUB_TOKEN
+  },
+  triggerDev: {
+    apiKey: TRIGGER_API_KEY,
+    apiUrl: TRIGGER_API_URL
   }
 };
 

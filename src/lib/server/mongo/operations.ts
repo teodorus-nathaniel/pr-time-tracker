@@ -11,6 +11,7 @@ import type {
 import { MAX_DATA_CHUNK } from '$lib/constants';
 
 type ItemCollection = {
+  _id?: ObjectId;
   id: number;
   org: string;
   repo: string;
@@ -31,6 +32,7 @@ type ItemCollection = {
 };
 
 type ContributorCollection = {
+  _id?: ObjectId;
   id: number;
   name: string;
   login: string;

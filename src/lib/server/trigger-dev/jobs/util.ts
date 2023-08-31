@@ -1,7 +1,10 @@
-import type { ObjectId } from 'mongodb';
+import { Github, events } from '@trigger.dev/github';
 
-import { ItemType } from '$lib/constants';
+import type { ObjectId, Document, ModifyResult } from 'mongodb';
+
+import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
+import { Collections, type ContributorCollection } from '$lib/server/mongo/operations';
 import type {
   PullRequest,
   User,
@@ -9,37 +12,38 @@ import type {
   Repository,
   Organization
 } from '$lib/server/github';
-import clientPromise from '$lib/server/mongo';
-import {
-  findAndupdateCollectionInfo,
-  type ContributorCollection,
-  type ItemCollection,
-  getCollectionInfo,
-  Collections
-} from '$lib/server/mongo/operations';
+import { ItemType } from '$lib/constants';
 
-const upsertDataToDB = async (collection: string, data: ContributorCollection | ItemCollection) => {
+const upsertDataToDB = async <T extends Document>(collection: Collections, data: T) => {
   const mongoDB = await clientPromise;
 
-  const res = await findAndupdateCollectionInfo(
-    mongoDB.db(config.mongoDBName),
-    collection,
-    { id: data.id },
-    { $set: data },
-    { returnDocument: 'after', upsert: true }
-  );
-
+  const res = await mongoDB
+    .db(config.mongoDBName)
+    .collection<T>(collection)
+    .findOneAndUpdate({ id: data.id }, { $set: data }, { returnDocument: 'after', upsert: true });
   return res;
 };
+
+const getContributorInfo = (user: User) => ({
+  id: user.id,
+  name: user.login,
+  login: user.login,
+  url: user.html_url,
+  avatarUrl: user.avatar_url
+});
 
 const addContributorIfNotExists = async (prId: number, contributorId: ObjectId | undefined) => {
   const mongoDB = await clientPromise;
 
   const contributorIds = await (
-    await getCollectionInfo(mongoDB.db(config.mongoDBName), Collections.ITEMS, {
-      type: ItemType.PULL_REQUEST,
-      id: prId
-    })
+    await mongoDB
+      .db(config.mongoDBName)
+      .collection(Collections.ITEMS)
+      .findOne({
+        type: ItemType.PULL_REQUEST,
+        id: prId
+      })
+      .then((d) => d?.contributorsIds)
   )?.contributorIds;
 
   if (contributorIds === undefined) {
@@ -60,21 +64,14 @@ const addContributorIfNotExists = async (prId: number, contributorId: ObjectId |
 
   return contributorIds;
 };
-const getContributorInfo = (user: User): ContributorCollection => ({
-  id: user.id,
-  name: user.login,
-  login: user.login,
-  url: user.html_url,
-  avatarUrl: user.avatar_url
-});
 
 const getPrInfo = async (
   pr: PullRequest | SimplePullRequest,
   repository: Repository,
   organization: Organization | undefined,
   sender: User,
-  contributorRes: any
-): Promise<ItemCollection> => {
+  contributorRes: ModifyResult<ContributorCollection>
+): Promise<any> => {
   const contributorIds = await addContributorIfNotExists(pr.id, contributorRes.value?._id);
 
   let prMerged = false;
@@ -83,7 +80,7 @@ const getPrInfo = async (
   }
 
   return {
-    type: 'pull_request',
+    type: ItemType.PULL_REQUEST,
     id: pr.id,
     title: pr.title,
     org: organization?.login ?? 'holdex',
@@ -98,4 +95,9 @@ const getPrInfo = async (
   };
 };
 
-export { getPrInfo, upsertDataToDB, getContributorInfo };
+const github = new Github({
+  id: 'github',
+  token: config.github.token
+});
+
+export { getContributorInfo, getPrInfo, upsertDataToDB, github, events };

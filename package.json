@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "npx husky install",
     "pre-dev": "node pull-env.js",
-    "dev": "npm run pre-dev && vite dev",
+    "dev": "npm run pre-dev && vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
     "format": "npx prettier . --write --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin @prettier/plugin-pug",
@@ -20,6 +20,8 @@
     "@octokit/webhooks-types": "^7.1.0",
     "@prettier/plugin-pug": "^3.0.0",
     "@steeze-ui/heroicons": "^2.2.3",
+    "@trigger.dev/github": "^2.0.14",
+    "@trigger.dev/sdk": "^2.0.14",
     "@types/cookie": "^0.5.1",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",
@@ -70,5 +72,8 @@
     "**/*.{js,ts,cjs,svelte}": [
       "npx eslint --fix --ignore-path .eslintignore"
     ]
+  },
+  "trigger.dev": {
+    "endpointId": "autoinvoicing-hCPJ"
   }
 }
