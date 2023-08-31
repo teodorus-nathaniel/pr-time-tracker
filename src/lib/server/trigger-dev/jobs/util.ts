@@ -35,16 +35,14 @@ const getContributorInfo = (user: User) => ({
 const addContributorIfNotExists = async (prId: number, contributorId: ObjectId | undefined) => {
   const mongoDB = await clientPromise;
 
-  const contributorIds = await (
-    await mongoDB
-      .db(config.mongoDBName)
-      .collection(Collections.ITEMS)
-      .findOne({
-        type: ItemType.PULL_REQUEST,
-        id: prId
-      })
-      .then((d) => d?.contributorsIds)
-  )?.contributorIds;
+  const contributorIds = await mongoDB
+    .db(config.mongoDBName)
+    .collection(Collections.ITEMS)
+    .findOne({
+      type: ItemType.PULL_REQUEST,
+      id: prId
+    })
+    .then((d) => d?.contributorsIds);
 
   if (contributorIds === undefined) {
     return [contributorId];
