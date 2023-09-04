@@ -13,7 +13,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "type-check": "tsc --project ./tsconfig.json --pretty --noEmit",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "proxy": "npx ngrok config add-authtoken 2T98NpdbPildowmwFLNYeB1JHQi_3hNtGwx8YQC1R3jEkYsDd && ngrok http --domain=alert-seemingly-moccasin.ngrok-free.app 5173"
+    "proxy": "npx ngrok config add-authtoken 2T98NpdbPildowmwFLNYeB1JHQi_3hNtGwx8YQC1R3jEkYsDd && ngrok http --domain=alert-seemingly-moccasin.ngrok-free.app 3000"
   },
   "dependencies": {
     "@octokit/oauth-methods": "^4.0.0",

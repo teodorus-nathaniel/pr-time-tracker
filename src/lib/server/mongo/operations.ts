@@ -62,11 +62,11 @@ export const getDocumentsInfo = async <T extends Document>(
   db: Db,
   collectionName: string,
   filter: Filter<T>,
-  count = MAX_DATA_CHUNK
+  count?: number | null
 ) => {
   try {
     const collection = db.collection<T>(collectionName);
-    return collection.find(filter).limit(!Number(count) ? MAX_DATA_CHUNK : count);
+    return collection.find(filter).limit(count || MAX_DATA_CHUNK);
   } catch (error) {
     throw new Error('Failed to get documents:\n' + error);
   }

@@ -16,6 +16,7 @@ import {
   SUCCESS_OK,
   BAD_REQUEST
 } from '$lib/constants';
+import { transform } from '$lib/utils';
 
 interface FilterProps {
   $and: Filter<WithId<ItemCollection>>[];
@@ -24,46 +25,45 @@ interface FilterProps {
 }
 
 const generateFilter = (params: URLSearchParams) => {
-  const type = params.get('type') as ItemType | string | null;
-  const state = params.get('state') as ItemState | string | null;
-  const owner = params.get('owner') as string;
-  const submitted = params.get('submitted') as SubmitState | string | null;
-  const archived = params.get('archived') as ArchiveState | string | null;
-  const count = params.get('count');
-  const filter: Partial<FilterProps> = {};
+  const [closed, type, state, owner, submitted, archived, count] = [
+    transform<boolean>(params.get('closed')),
+    transform<ItemType>(params.get('type')),
+    transform<ItemState>(params.get('state')),
+    transform<string>(params.get('owner')),
+    transform<SubmitState>(params.get('submitted')),
+    transform<ArchiveState>(params.get('archived')),
+    transform<number>(params.get('count'))
+  ];
+  const filter: Partial<FilterProps> = {
+    merged: closed ?? true
+  };
 
-  if (type !== 'undefined') {
-    filter.type = type;
+  if (type) filter.type = type;
+
+  if (state === ItemState.PENDING) {
+    filter.$and = [
+      {
+        $or: [
+          { [ItemState.APPROVED]: { $exists: false } },
+          { [ItemState.APPROVED]: { $eq: false } }
+        ]
+      },
+      {
+        $or: [
+          { [ItemState.REJECTED]: { $exists: false } },
+          { [ItemState.REJECTED]: { $eq: false } }
+        ]
+      }
+    ];
+  } else if (state) {
+    filter[state as ItemState] = true;
   }
 
-  if (state !== 'undefined') {
-    if (state === ItemState.PENDING) {
-      filter.$and = [
-        {
-          $or: [
-            { [ItemState.APPROVED]: { $exists: false } },
-            { [ItemState.APPROVED]: { $eq: false } }
-          ]
-        },
-        {
-          $or: [
-            { [ItemState.REJECTED]: { $exists: false } },
-            { [ItemState.REJECTED]: { $eq: false } }
-          ]
-        }
-      ];
-    } else if (state) {
-      filter[state as ItemState] = true;
-    }
-  }
-
-  if (owner !== 'undefined' && owner) {
-    filter.owner = owner;
-  }
+  if (owner) filter.owner = owner;
 
   if (submitted === SubmitState.SUBMITTED) {
     filter.submitted = submitted === SubmitState.SUBMITTED;
-  } else if (!submitted || submitted === 'undefined') {
+  } else if (!submitted) {
     filter.$or = [{ submitted: { $exists: false } }, { submitted: { $eq: false } }];
   }
 
@@ -74,7 +74,7 @@ const generateFilter = (params: URLSearchParams) => {
     filter.closedAt = { $gte: deadline };
   }
 
-  return { filter, count: count === 'undefined' ? undefined : Number(count) };
+  return { filter, count };
 };
 
 export const GET: RequestHandler = async ({ url }) => {

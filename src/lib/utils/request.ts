@@ -4,6 +4,18 @@ import { snackbar } from '$lib/components/Snackbar';
 import { ItemState, ItemType } from '$lib/constants';
 import type { ItemCollection } from '$lib/server/mongo/operations';
 
+export const transform = <Result = unknown>(
+  value: string | undefined | null
+): Result | null | undefined => {
+  if (value === 'undefined') return undefined;
+  if (value === 'null') return null;
+  if (value === 'true') return true as Result;
+  if (value === 'false') return false as Result;
+  if (!value) return value as Result;
+  if (typeof value === 'string' && /\{|\[/.test(value)) return JSON.parse(value) as Result;
+  return (Number(value) || value) as Result;
+};
+
 export const axios = ax.create({
   baseURL: '/api',
   headers: {
