@@ -54,9 +54,9 @@ const generateFilter = (params: URLSearchParams) => {
 
   if (owner) filter.owner = owner;
 
-  if (submitted === SubmitState.SUBMITTED) {
-    filter.submitted = submitted === SubmitState.SUBMITTED;
-  } else if (!submitted) {
+  if (submitted) {
+    filter.submitted = true;
+  } else {
     filter.$or = [{ submitted: { $exists: false } }, { submitted: { $eq: false } }];
   }
 
