@@ -1,10 +1,10 @@
 import { Github, events } from '@trigger.dev/github';
 
-import type { ObjectId, Document, ModifyResult } from 'mongodb';
+import type { Document, ModifyResult } from 'mongodb';
 
 import clientPromise, { CollectionNames } from '$lib/server/mongo';
 import config from '$lib/server/config';
-import type { ContributorSchema } from '$lib/server/mongo/operations';
+import type { ContributorSchema, ItemSchema } from '$lib/server/mongo/operations';
 import type {
   PullRequest,
   User,
@@ -32,26 +32,26 @@ const getContributorInfo = (user: User) => ({
   avatarUrl: user.avatar_url
 });
 
-const addContributorIfNotExists = async (prId: number, contributorId: ObjectId | undefined) => {
+const addContributorIfNotExists = async (prId: number, contributorId: number | undefined) => {
   const mongoDB = await clientPromise;
 
   const contributorIds = (
-    await mongoDB.db(config.mongoDBName).collection(CollectionNames.ITEMS).findOne({
+    await mongoDB.db(config.mongoDBName).collection<ItemSchema>(CollectionNames.ITEMS).findOne({
       type: ItemType.PULL_REQUEST,
       id: prId
     })
-  )?.contributorIds;
+  )?.contributor_ids;
 
   if (contributorIds === undefined) {
-    return [contributorId];
+    return [];
   }
 
   if (contributorId === undefined) {
     return contributorIds;
   }
 
-  const isInArray = contributorIds.some((currentContributorId: ObjectId) =>
-    currentContributorId.equals(contributorId)
+  const isInArray = contributorIds.some(
+    (currentContributorId) => currentContributorId === contributorId
   );
 
   if (!isInArray) {
@@ -67,8 +67,8 @@ const getPrInfo = async (
   organization: Organization | undefined,
   sender: User,
   contributorRes: ModifyResult<ContributorSchema>
-): Promise<any> => {
-  const contributorIds = await addContributorIfNotExists(pr.id, contributorRes.value?._id);
+): Promise<ItemSchema> => {
+  const contributorIds = await addContributorIfNotExists(pr.id, contributorRes.value?.id);
 
   let prMerged = false;
   if (pr.closed_at && (pr as PullRequest).merged) {
@@ -82,12 +82,12 @@ const getPrInfo = async (
     org: organization?.login ?? 'holdex',
     repo: repository.name,
     owner: pr.user.login || sender.login,
-    contributorIds,
+    contributor_ids: contributorIds,
     url: pr.url,
-    createdAt: pr?.created_at,
-    updatedAt: pr?.updated_at,
+    created_at: pr?.created_at,
+    updated_at: pr?.updated_at,
     merged: prMerged,
-    closedAt: pr.closed_at ?? undefined
+    closed_at: pr.closed_at ?? undefined
   };
 };
 
