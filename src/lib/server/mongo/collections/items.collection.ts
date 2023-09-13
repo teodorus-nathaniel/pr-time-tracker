@@ -4,6 +4,7 @@ import { DESCENDING, ItemType, MAX_DATA_CHUNK } from '$lib/constants';
 import { transform } from '$lib/utils';
 
 import {
+  Approval,
   CollectionNames,
   type ContributorSchema,
   type GetManyParams,
@@ -19,6 +20,7 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
     if (!contributor_id) return await super.getMany(searchParams);
 
     const filter = this.makeFilter(searchParams);
+    const approvals = transform<Approval[]>(searchParams.get('approvals'));
     const submitted = transform<boolean>(searchParams.get('submitted'));
     const definesSubmitted = typeof submitted === 'boolean';
     const { count, skip, sort_by, sort_order } = ItemsCollection.makeQuery(params);
@@ -40,6 +42,7 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
         {
           $match: {
             submission: definesSubmitted ? { $exists: submitted } : undefined,
+            'submission.approval': approvals ? { $in: approvals } : undefined,
             'submission.owner_id': submitted ? { $eq: contributor_id } : undefined
           }
         }
