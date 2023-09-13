@@ -1,21 +1,23 @@
 /* eslint-disable no-shadow */
-import type { BSONTypeAlias, Filter, ObjectId, WithId } from 'mongodb';
+import type { BSONTypeAlias, ObjectId, Sort, SortDirection } from 'mongodb';
 
 import type { ItemType } from '$lib/constants';
 
 export interface JSONSchema<CollectionType> {
   required?: Array<keyof Omit<CollectionType, '_id'>>;
-  properties?: Record<
-    keyof Omit<CollectionType, '_id'>,
-    { bsonType: BSONTypeAlias | BSONTypeAlias[]; description?: string; enum?: string[] }
+  properties: Record<
+    keyof Omit<CollectionType, '_id' | 'createdAt' | 'updatedAt' | 'created_at' | 'updated_at'>,
+    { bsonType?: BSONTypeAlias | BSONTypeAlias[]; description?: string; enum?: string[] }
   >;
 }
 
-export interface FilterProps<CollectionType = ItemSchema> {
-  $and: Filter<WithId<CollectionType>>[];
-  $or: FilterProps['$and'];
-  [key: string]: any;
-}
+export type QueryProps<CollectionType = ItemSchema> = {
+  sort?: Sort;
+  sort_by?: keyof CollectionType;
+  sort_order?: SortDirection;
+  skip?: number;
+  count?: number;
+};
 
 export enum CollectionNames {
   ITEMS = 'items',
@@ -65,8 +67,9 @@ export type SubmissionSchema = {
   hours: string;
   experience: Experience;
   approval?: Approval;
-  owner: string;
-  item_id: ObjectId;
+  /** Note that this is equivalent to `contributor_id`(s) in `ItemSchema`. */
+  owner_id: number;
+  item_id: number;
 };
 
 export enum Approval {

@@ -31,7 +31,7 @@
     $snackbar = { text: 'Please, wait...', type: 'busy' };
 
     try {
-      await axios.post<{ result: ItemSchema }>(`/items`, payload);
+      await axios.patch<{ data: ItemSchema }>(`/items`, payload);
       if (!isUpdate) prs = prs.filter((submit) => submit.id !== pr.id);
       invalidateCache = true;
       $snackbar = {
@@ -67,7 +67,7 @@
   <ul class="grid gap-4 md:gap-8">
     {#each prs as pr, i}
       <!-- Force component destroy/re-render to get updated `pr` object values -->
-      {#key invalidateCache ? pr : i}
+      {#key invalidateCache ? pr : `${i} ${$activeTab.position}`}
         <PR data={pr} {onSubmit} isAdmin={isContributorContext} isReadonly={pr.approved} />
       {/key}
     {:else}

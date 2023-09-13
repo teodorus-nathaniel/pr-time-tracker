@@ -13,6 +13,7 @@ import type {
   Organization
 } from '$lib/server/github';
 import { ItemType } from '$lib/constants';
+import { items } from '$lib/server/mongo/collections';
 
 const upsertDataToDB = async <T extends Document>(collection: CollectionNames, data: T) => {
   const mongoDB = await clientPromise;
@@ -32,35 +33,6 @@ const getContributorInfo = (user: User) => ({
   avatarUrl: user.avatar_url
 });
 
-const addContributorIfNotExists = async (prId: number, contributorId: number | undefined) => {
-  const mongoDB = await clientPromise;
-
-  const contributorIds = (
-    await mongoDB.db(config.mongoDBName).collection<ItemSchema>(CollectionNames.ITEMS).findOne({
-      type: ItemType.PULL_REQUEST,
-      id: prId
-    })
-  )?.contributor_ids;
-
-  if (contributorIds === undefined) {
-    return [];
-  }
-
-  if (contributorId === undefined) {
-    return contributorIds;
-  }
-
-  const isInArray = contributorIds.some(
-    (currentContributorId) => currentContributorId === contributorId
-  );
-
-  if (!isInArray) {
-    contributorIds.push(contributorId);
-  }
-
-  return contributorIds;
-};
-
 const getPrInfo = async (
   pr: PullRequest | SimplePullRequest,
   repository: Repository,
@@ -68,12 +40,10 @@ const getPrInfo = async (
   sender: User,
   contributorRes: ModifyResult<ContributorSchema>
 ): Promise<ItemSchema> => {
-  const contributorIds = await addContributorIfNotExists(pr.id, contributorRes.value?.id);
-
+  const contributorIds = await items.makeContributorIds(pr.id, contributorRes.value);
   let prMerged = false;
-  if (pr.closed_at && (pr as PullRequest).merged) {
-    prMerged = true;
-  }
+
+  if (pr.closed_at && (pr as PullRequest).merged) prMerged = true;
 
   return {
     type: ItemType.PULL_REQUEST,

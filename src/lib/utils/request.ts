@@ -19,7 +19,7 @@ export const jsonError = (e: unknown, path: string, method?: string | null, stat
 
 export const transform = <Result = unknown>(
   value: unknown,
-  transformNumber = true
+  preserveNumber = false
 ): Result | null | undefined => {
   const isString = typeof value === 'string';
   const isArray = value && !isString && Array.isArray(value);
@@ -35,18 +35,18 @@ export const transform = <Result = unknown>(
     let parseds = (isString ? JSON.parse(value) : value) as Result;
 
     if (Array.isArray(parseds)) {
-      parseds = parseds.map((parsed) => transform(parsed, transformNumber)) as Result;
+      parseds = parseds.map((parsed) => transform(parsed, preserveNumber)) as Result;
     } else if (typeof parseds === 'object') {
       // eslint-disable-next-line guard-for-in
       for (const key in parseds) {
-        parseds[key] = transform(parseds[key], transformNumber)!;
+        parseds[key] = transform(parseds[key], preserveNumber)!;
       }
     }
 
     return parseds;
   }
 
-  return (transformNumber ? Number(value) || value : value) as Result;
+  return (!preserveNumber ? Number(value) || value : value) as Result;
 };
 
 export const axios = ax.create({
@@ -74,7 +74,7 @@ export interface PRsQuery {
 export const getPRs = async (query: PRsQuery, noCache = false) => {
   try {
     const { owner, type, submitted, state, archived } = query;
-    const response = await axios.get<{ result: ItemSchema[] }>(
+    const response = await axios.get<{ data: ItemSchema[] }>(
       `/items?type=${
         type || ItemType.PULL_REQUEST
       }&owner=${owner}&submitted=${submitted}&state=${state}&archived=${archived}${
@@ -82,7 +82,7 @@ export const getPRs = async (query: PRsQuery, noCache = false) => {
       }`
     );
 
-    return response.data.result;
+    return response.data.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     snackbar.set({ text: e.message || e, type: 'error' });
