@@ -4,7 +4,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import clientPromise, { CollectionNames, type FilterProps } from '$lib/server/mongo';
 import config from '$lib/server/config';
-import type { ItemSchema } from '$lib/server/mongo/operations';
+import type { ContributorSchema, ItemSchema } from '$lib/server/mongo/operations';
 import { getDocumentsInfo, updateCollectionInfo } from '$lib/server/mongo/operations';
 import {
   ONE_MONTH,
@@ -74,9 +74,24 @@ export const GET: RequestHandler = async ({ url }) => {
   const { searchParams } = url;
 
   const { filter, count } = generateFilter(searchParams);
-  const mongoDB = await clientPromise;
+  const mongoClient = await clientPromise;
+  const db = mongoClient.db(config.mongoDBName);
+
+  if (filter.owner) {
+    const contributor = await db
+      .collection<ContributorSchema>(CollectionNames.CONTRIBUTORS)
+      .findOne({ login: filter.owner });
+
+    if (contributor) {
+      filter.contributor_ids = {
+        $in: [contributor.id]
+      };
+      delete filter.owner;
+    }
+  }
+
   const documents = await (
-    await getDocumentsInfo(mongoDB.db(config.mongoDBName), CollectionNames.ITEMS, filter, count)
+    await getDocumentsInfo(db, CollectionNames.ITEMS, filter, count)
   ).toArray();
 
   return json({ message: 'success', result: documents }, { status: SUCCESS_OK });
