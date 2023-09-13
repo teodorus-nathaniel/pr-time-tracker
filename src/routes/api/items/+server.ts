@@ -72,38 +72,8 @@ import { contributors, items } from '$lib/server/mongo/collections';
 //   return { filter, count };
 // };
 
-// export const GET: RequestHandler = async ({ url: {searchParams} }) => {
-
-//   const { filter, count } = generateFilter(searchParams);
-//   const mongoDB = await clientPromise;
-//   const documents = await (
-//     await getDocumentsInfo(mongoDB.db(config.mongoDBName), CollectionNames.ITEMS, filter, count)
-//   ).toArray();
-
-//   return json({ message: 'success', result: documents }, { status: SUCCESS_OK });
-// };
-
 export const GET: RequestHandler = async ({ url: { searchParams } }) => {
   try {
-    // const results = await items.getMany(new URLSearchParams({ count: '1000' }));
-    // await Promise.all(
-    //   results.map(async (result) => {
-    //     await Promise.all(
-    //       result.contributorIds.map(async (contributorId) => {
-    //         if (result.contributors?.length > 1) return;
-    //         result.contributors = (
-    //           await items.makeContributors(
-    //             result.id,
-    //             await contributors.getOne(contributorId!.toString())
-    //           )
-    //         ).contributors;
-    //       })
-    //     );
-
-    //     await items.update(result);
-    //   })
-    // );
-
     return json({ data: await items.getMany(searchParams) });
   } catch (e) {
     return jsonError(e, '/api/items');
