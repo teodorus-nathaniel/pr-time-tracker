@@ -5,7 +5,7 @@ import type { Filter, WithId } from 'mongodb';
 
 import clientPromise, { CollectionNames } from '$lib/server/mongo';
 import config from '$lib/server/config';
-import type { ContributorSchema, ItemSchema } from '$lib/server/mongo/operations';
+import type { ItemSchema } from '$lib/server/mongo/operations';
 import { getDocumentsInfo, updateCollectionInfo } from '$lib/server/mongo/operations';
 import {
   ONE_MONTH,
@@ -103,7 +103,9 @@ export const PATCH: RequestHandler = async ({ request }) => {
     const body = transform<ItemSchema>(await request.json())!;
     const data = await items.update(body);
 
-    return json({ data: { _id: data.upsertedId, ...body } });
+    if (!data.acknowledged) throw Error(`Could not make update for item, ${body._id}.`);
+
+    return json({ data: body });
   } catch (e) {
     return jsonError(e, '/api/items', 'PATCH');
   }

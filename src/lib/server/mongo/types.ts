@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import type { BSONTypeAlias, ObjectId, Sort, SortDirection } from 'mongodb';
+import type { BSONTypeAlias, ObjectId, Sort, SortDirection, WithId } from 'mongodb';
 
 import type { ItemType } from '$lib/constants';
 
@@ -48,19 +48,11 @@ export interface ItemSchema extends TimeStamps {
   repo: string;
   owner: string;
   title: string;
-  /** @deprecated - Will use `contributor_ids` instead. */
-  contributorIds?: (ObjectId | undefined | null)[];
   contributor_ids?: number[];
   /** `contributors` here is just for type safety. It may be populated on `Item` retrieval. */
   contributors?: ContributorSchema[];
   type: ItemType;
   url: string;
-  /** @deprecated - Use `created_at` instead. */
-  createdAt?: string;
-  /** @deprecated - Use `updated_at` instead. */
-  updatedAt?: string;
-  /** @deprecated - Use `closed_at` instead. */
-  closedAt?: string | null;
   merged?: boolean;
   created_at?: string | number;
   updated_at?: string | number;

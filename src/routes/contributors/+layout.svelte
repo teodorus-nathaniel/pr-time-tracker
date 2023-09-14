@@ -1,14 +1,12 @@
 <script lang="ts">
-  /** externals */
+  /** deps */
   import { onMount } from 'svelte';
 
   import { page } from '$app/stores';
   import { preloadCode } from '$app/navigation';
 
-  /** types */
   import type { LayoutData } from './$types';
 
-  /** internals */
   import Header from '$lib/components/Header/index.svelte';
   import { routes } from '$lib/config';
   import type { ContributorSchema } from '$lib/server/mongo/operations';
@@ -18,19 +16,21 @@
   export let data: LayoutData;
 
   /** vars */
+  let contributorName: string | null;
+  let contributorId: string;
   let isArchiveRoute = false;
   let route = routes.contributors.path;
   let isBaseRoute = true;
   let contributor: ContributorSchema | undefined;
 
-  onMount(() => {
-    setTimeout(() => {
-      preloadCode('/contributors/*');
-    });
-  });
+  onMount(() => setTimeout(() => preloadCode('/contributors/*')));
 
   /** react-ibles */
-  $: route = $page.url.pathname;
+  $: {
+    contributorName = $page.data.contributor?.name || '...';
+    contributorId = $page.params.id;
+    route = $page.url.pathname;
+  }
   $: isBaseRoute = route === routes.contributors.path;
   $: isArchiveRoute = route.includes('archive');
 </script>
@@ -39,11 +39,11 @@
   title={`${!isBaseRoute ? '' : routes.contributors.title}${
     isBaseRoute
       ? ''
-      : `${contributor?.name || $page.params.username}${isArchiveRoute ? ' ⏤ Archive' : ''}`
+      : `${contributor?.name || contributorName}${isArchiveRoute ? ' ⏤ Archive' : ''}`
   }`}
-  breadcrumbs={$page.params.username &&
-    `Contributors / ${$page.params.username}${isArchiveRoute ? ' / Archive' : ''}`}
-  archivePath={`${routes.contributors.path}/${$page.params.username}/archive`}
+  breadcrumbs={contributorId &&
+    `Contributors / ${contributorName}${isArchiveRoute ? ' / Archive' : ''}`}
+  archivePath={`${routes.contributors.path}/${contributorId}/archive`}
   activeToggleButton={$activeTab.position}
   toggle={isBaseRoute
     ? undefined

@@ -35,17 +35,34 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
     const result = await Promise.all(
       items.map(async (item) => {
         const { contributor_ids } = item;
+        let needUpdate = false;
 
-        if (!contributor_ids?.length) {
-          item.contributor_ids = [];
-          const contributor = contributors.find(({ login }) => login === item.owner);
-          if (contributor) item.contributor_ids!.push(contributor.id);
-          if (!item.submission_ids) item.submission_ids = [];
+        const contributor = !contributor_ids?.length //|| !item.owner_id
+          ? contributors.find(({ login }) => login === item.owner)
+          : undefined;
 
-          if (canUnsetDeprecated) {
-            // delete item.contributors;
+        if (contributor) {
+          if (!contributor_ids?.length) {
+            item.contributor_ids = [];
+            item.contributor_ids!.push(contributor.id);
+            needUpdate = true;
           }
 
+          // if (!item.owner_id) {
+          //   item.owner_id = contributor.id;
+          //   needUpdate = true;
+          // }
+        }
+
+        if (!item.submission_ids?.length) {
+          item.submission_ids = [];
+        }
+
+        if (canUnsetDeprecated) {
+          // delete item.contributors;
+        }
+
+        if (needUpdate) {
           await itemsCollection.updateOne(
             { _id: item._id },
             {
@@ -59,8 +76,9 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
                 : {})
             }
           );
-          return item;
         }
+
+        return item;
       })
     );
 
