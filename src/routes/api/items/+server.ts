@@ -3,7 +3,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Filter, WithId } from 'mongodb';
 
-import clientPromise, { CollectionNames } from '$lib/server/mongo';
+import clientPromise from '$lib/server/mongo';
 import config from '$lib/server/config';
 import type { ItemSchema } from '$lib/server/mongo/operations';
 import { getDocumentsInfo, updateCollectionInfo } from '$lib/server/mongo/operations';
@@ -100,12 +100,7 @@ export const GET: RequestHandler = async ({ url: { searchParams } }) => {
 
 export const PATCH: RequestHandler = async ({ request }) => {
   try {
-    const body = transform<ItemSchema>(await request.json())!;
-    const data = await items.update(body);
-
-    if (!data.acknowledged) throw Error(`Could not make update for item, ${body._id}.`);
-
-    return json({ data: body });
+    return json({ data: await items.update(transform<ItemSchema>(await request.json())!) });
   } catch (e) {
     return jsonError(e, '/api/items', 'PATCH');
   }
