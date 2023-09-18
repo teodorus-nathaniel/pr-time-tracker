@@ -14,7 +14,7 @@ import type {
   GetManyParams
 } from '$lib/@types';
 
-import { ASCENDING, MAX_DATA_CHUNK } from '$lib/constants';
+import { DESCENDING, MAX_DATA_CHUNK } from '$lib/constants';
 import { transform } from '$lib/utils';
 
 import config from '../../config';
@@ -85,7 +85,13 @@ export abstract class BaseCollection<
 
     return await this.context
       .find(filter)
-      .sort(sort || { [sort_by || 'created_at']: sort_order || ASCENDING })
+      .sort(
+        sort || {
+          [sort_by ||
+          ('updated_at' in this.validationSchema.properties ? 'updated_at' : 'created_at')]:
+            sort_order || DESCENDING
+        }
+      )
       .skip(skip || 0)
       .limit(count || MAX_DATA_CHUNK)
       .toArray();
@@ -95,8 +101,10 @@ export abstract class BaseCollection<
     payload.updated_at = new Date().toISOString();
 
     const result = await this.context.updateOne(
-      (!id ? { id } : { _id }) as Filter<CollectionType>,
-      { $set: payload as Partial<CollectionType> }
+      (_id ? { _id: new ObjectId(_id) } : { id }) as Filter<CollectionType>,
+      {
+        $set: payload as Partial<CollectionType>
+      }
     );
 
     if (!result.acknowledged) {
@@ -107,7 +115,7 @@ export abstract class BaseCollection<
       );
     }
 
-    return (await this.getOne(_id?.toString() || { id: id! }))!;
+    return (await this.getOne(_id || { id: id! }))!;
   }
 
   makeFilter(searchParams?: URLSearchParams) {

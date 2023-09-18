@@ -77,7 +77,7 @@
 <main class="max-w-container m-auto py-4 animate-fadeIn md:py-8">
   <ul class="grid gap-4 md:gap-8">
     {#each prs as pr, i}
-      <!-- Force component destroy/re-render to get updated `pr` object values -->
+      <!-- Force component destroy/re-render to get updated `pr` object values. -->
       {#key invalidateCache ? pr : `${i} ${$activeTab.position}`}
         <PR
           data={pr}
