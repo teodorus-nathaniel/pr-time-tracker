@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
     const result = await Promise.all(
       _items.map(async (item) => {
         const { submission_ids } = item;
-        const needUpdate = false;
+        let needUpdate = false;
 
         const contributor = _contributors.find(({ login }) => login === item.owner);
 
@@ -57,7 +57,8 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
           // item.submission_ids = [];
         }
 
-        if (canUnsetDeprecated) {
+        if (canUnsetDeprecated || (item as any).submitted) {
+          needUpdate = true;
           // delete item.contributors;
           delete (item as any).submitted;
           delete (item as any).hours;

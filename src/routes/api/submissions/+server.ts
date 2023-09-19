@@ -5,7 +5,7 @@ import type { SubmissionSchema } from '$lib/@types';
 
 import { SUCCESS_OK } from '$lib/constants';
 import { jsonError, transform } from '$lib/utils';
-import { submissions } from '$lib/server/mongo/collections';
+import { items, submissions } from '$lib/server/mongo/collections';
 
 export const GET: RequestHandler = async ({ url: { searchParams } }) => {
   try {
@@ -30,13 +30,17 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PATCH: RequestHandler = async ({ request }) => {
   try {
+    const submission = await submissions.update(
+      transform<SubmissionSchema>(await request.json(), {
+        pick: ['_id', 'hours', 'experience', 'approval']
+      })!
+    );
+
+    await items.update({ id: submission.item_id, updated_at: submission.updated_at! });
+
     // To-do: Add Authorization (through out endpoints) to restrict/prevent updating unauthorized (submission) paths
     return json({
-      data: await submissions.update(
-        transform<SubmissionSchema>(await request.json(), {
-          pick: ['_id', 'hours', 'experience', 'approval']
-        })!
-      )
+      data: submission
     });
   } catch (e) {
     return jsonError(e, '/api/submissions', 'PATCH');

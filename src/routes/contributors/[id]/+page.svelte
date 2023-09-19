@@ -8,8 +8,9 @@
   import PRs from '$lib/layouts/PRs/index.svelte';
   import type { ItemSchema } from '$lib/server/mongo/operations';
   import { activeTab } from '$lib/components/Toggle';
-  import { ItemState } from '$lib/constants';
   import { getPRs } from '$lib/utils';
+
+  import { Approval } from '$lib/@types';
 
   /** props */
   export let data: PageData;
@@ -28,7 +29,7 @@
     // fetch `submitted` PRs initially since `unsubmitted`s are fetched on server (for faster navigation/load)
     prs.approved = await getPRs({
       submitted: true,
-      state: ItemState.APPROVED,
+      approvals: [Approval.APPROVED],
       contributor_id: data.contributor.id
     });
   });
@@ -45,5 +46,5 @@
 
 <PRs
   context="contributor"
-  query={{ state: isApprovedTab ? ItemState.APPROVED : ItemState.PENDING, submitted: true }}
+  query={{ approvals: isApprovedTab ? [Approval.APPROVED] : [Approval.PENDING], submitted: true }}
   bind:prs={prs[isApprovedTab ? 'approved' : 'pending']} />
