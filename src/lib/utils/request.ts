@@ -2,10 +2,10 @@ import ax, { type InternalAxiosRequestConfig } from 'axios';
 import { json } from '@sveltejs/kit';
 
 import type { MongoServerError } from 'mongodb';
-import type { ItemSchema } from '$lib/@types';
+import type { Approval, ItemSchema } from '$lib/@types';
 
 import { snackbar } from '$lib/components/Snackbar';
-import { BAD_REQUEST, ItemState, ItemType } from '$lib/constants';
+import { BAD_REQUEST, ItemType } from '$lib/constants';
 
 export const jsonError = (e: unknown, path: string, method?: string | null, status = 500) => {
   const message = (e as MongoServerError).errInfo
@@ -83,20 +83,20 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 export interface PRsQuery {
   contributor_id: number;
   type?: ItemType;
-  state?: ItemState;
+  approvals?: Approval[];
   submitted?: boolean;
   archived?: boolean;
 }
 
 export const getPRs = async (query: PRsQuery, noCache = false) => {
   try {
-    const { contributor_id, type, submitted, state, archived } = query;
+    const { contributor_id, type, submitted, approvals, archived } = query;
     const response = await axios.get<{ data: ItemSchema[] }>(
       `/items?type=${
         type || ItemType.PULL_REQUEST
-      }&contributor_id=${contributor_id}&submitted=${submitted}&state=${state}&archived=${archived}${
-        noCache ? `&cache_bust=${String(Math.random()).slice(2, 10)}` : ''
-      }`
+      }&contributor_id=${contributor_id}&submitted=${submitted}&archived=${archived}&approvals=${
+        approvals && JSON.stringify(approvals)
+      }&${noCache ? `&cache_bust=${String(Math.random()).slice(2, 10)}` : ''}`
     );
 
     return response.data.data;

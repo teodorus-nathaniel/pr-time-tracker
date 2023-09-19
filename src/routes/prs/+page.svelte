@@ -34,6 +34,4 @@
 
 <PRs
   bind:prs={prs[isSubmittedPrs ? 'submitted' : 'unsubmitted']}
-  query={{
-    submitted: isSubmittedPrs ? true : undefined
-  }} />
+  query={{ submitted: isSubmittedPrs }} />

@@ -1,6 +1,6 @@
 import type { WithId, Filter } from 'mongodb';
 
-import { ASCENDING, DESCENDING, ItemType, MAX_DATA_CHUNK } from '$lib/constants';
+import { DESCENDING, ItemType, MAX_DATA_CHUNK } from '$lib/constants';
 import { transform } from '$lib/utils';
 
 import { BaseCollection } from './base.collection';
@@ -42,8 +42,8 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
           $match: {
             submission: definesSubmitted ? { $exists: submitted } : { $ne: '' },
             'submission.owner_id':
-              definesSubmitted && contributor_id ? { $eq: contributor_id } : { $ne: '' },
-            'submission.approval': definesSubmitted && approvals ? { $in: approvals } : { $ne: '' }
+              contributor_id && submitted ? { $eq: contributor_id } : { $ne: '' },
+            'submission.approval': approvals ? { $in: approvals } : { $ne: '' }
           }
         }
       ])

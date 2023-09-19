@@ -38,7 +38,7 @@
         submission
       );
 
-      if (!isUpdate) prs = prs.filter((pr) => pr.id !== submission.item_id);
+      if (!isUpdate || isContributorContext) prs = prs.filter((pr) => pr.id !== submission.item_id);
       invalidateCache = true;
       $snackbar = {
         text: `Successfully ${

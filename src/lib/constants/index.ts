@@ -22,19 +22,3 @@ export enum ItemType {
   PULL_REQUEST = 'pull_request',
   ISSUES = 'issue'
 }
-
-export enum ItemState {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected'
-}
-
-export enum SubmitState {
-  SUBMITTED = 'true',
-  UNSUBMITTED = 'false'
-}
-
-export enum ArchiveState {
-  ARCHIVED = 'true',
-  RETRIEVED = 'false'
-}

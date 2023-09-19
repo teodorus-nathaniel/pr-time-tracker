@@ -3,16 +3,13 @@ import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import clientPromise from '$lib/server/mongo';
-import config from '$lib/server/config';
-import type { ContributorSchema, ItemSchema } from '$lib/server/mongo/operations';
-import { ItemState, ItemType, MAX_DATA_CHUNK } from '$lib/constants';
+import { ItemType } from '$lib/constants';
 import { responseHeadersInit } from '$lib/config';
 import { contributors, items } from '$lib/server/mongo/collections';
 
 import { Approval } from '$lib/@types';
 
-export const GET: RequestHandler = async ({ params, fetch }) => {
+export const GET: RequestHandler = async ({ params }) => {
   const id = Number(params.id);
 
   try {
@@ -24,7 +21,7 @@ export const GET: RequestHandler = async ({ params, fetch }) => {
       new URLSearchParams({
         type: ItemType.PULL_REQUEST,
         contributor_id: String(id),
-        approval: `[${Approval.PENDING}, ${Approval.REJECTED}]`
+        approvals: JSON.stringify([Approval.PENDING, Approval.REJECTED])
       })
     );
 
