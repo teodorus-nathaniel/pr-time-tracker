@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
 
   try {
     const [_items, _contributors] = await Promise.all([
-      items.getMany({ count: 5000 }),
+      items.context.find().toArray(), //{ count: 5000 }),
       contributors.getMany({ count: 100 })
       // submissions.context.deleteMany()
     ]);
@@ -35,19 +35,33 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
         const contributor = _contributors.find(({ login }) => login === item.owner);
 
         if (contributor) {
-          if (!submission_ids?.length && (item as any).submitted) {
+          if ((item as any).submitted) {
             needUpdate = true;
-            if (item.submission) {
-              item.submission_ids = [item.submission._id!];
+
+            if (!submission_ids?.length) {
+              if (item.submission) {
+                item.submission_ids = [item.submission._id!];
+              } else {
+                await submissions.create({
+                  item_id: item.id,
+                  owner_id: contributor.id,
+                  hours: parseFloat((item as any).hours),
+                  experience: (item as any).experience
+                });
+              }
+              // await submissions.context.deleteMany({ item_id: item.id });
             } else {
-              await submissions.create({
-                item_id: item.id,
-                owner_id: contributor.id,
-                hours: parseFloat((item as any).hours),
-                experience: (item as any).experience
-              });
+              try {
+                await submissions.create({
+                  item_id: item.id,
+                  owner_id: contributor.id,
+                  hours: parseFloat((item as any).hours),
+                  experience: (item as any).experience
+                });
+              } catch (e) {
+                //
+              }
             }
-            // await submissions.context.deleteMany({ item_id: item.id });
           }
 
           // if (!(item as any).owner_id) {
