@@ -32,6 +32,9 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
             from: CollectionNames.SUBMISSIONS,
             localField: 'id',
             foreignField: 'item_id',
+            pipeline: [
+              { $match: { owner_id: contributor_id ? { $eq: contributor_id } : { $ne: '' } } }
+            ],
             as: 'submission'
           }
         },
@@ -41,9 +44,7 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
         {
           $match: {
             submission: definesSubmitted ? { $exists: submitted } : { $ne: '' },
-            'submission.owner_id':
-              contributor_id && submitted ? { $eq: contributor_id } : { $ne: '' },
-            'submission.approval': approvals ? { $in: approvals } : { $ne: '' }
+            'submission.approval': submitted && approvals ? { $in: approvals } : { $ne: '' }
           }
         }
       ])

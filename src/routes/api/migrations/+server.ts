@@ -23,8 +23,8 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
 
   try {
     const [_items, _contributors] = await Promise.all([
-      items.getMany({ count: 1000 }),
-      contributors.getMany()
+      items.getMany({ count: 5000 }),
+      contributors.getMany({ count: 100 })
       // submissions.context.deleteMany()
     ]);
     const result = await Promise.all(
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
             { _id: item._id },
             {
               $set: item,
-              ...(canUnsetDeprecated
+              ...(canUnsetDeprecated || (item as any).submitted
                 ? {
                     $unset: {
                       // closedAt: ''
