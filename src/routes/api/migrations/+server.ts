@@ -36,13 +36,17 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
 
         if (contributor) {
           if (!submission_ids?.length && (item as any).submitted) {
-            // needUpdate = true;
-            await submissions.create({
-              item_id: item.id,
-              owner_id: contributor.id,
-              hours: parseFloat((item as any).hours),
-              experience: (item as any).experience
-            });
+            needUpdate = true;
+            if (item.submission) {
+              item.submission_ids = [item.submission._id!];
+            } else {
+              await submissions.create({
+                item_id: item.id,
+                owner_id: contributor.id,
+                hours: parseFloat((item as any).hours),
+                experience: (item as any).experience
+              });
+            }
             // await submissions.context.deleteMany({ item_id: item.id });
           }
 
@@ -89,7 +93,11 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
     );
 
     return json(
-      { message: 'success', extra: result.length, data: result },
+      {
+        message: 'success',
+        extra: result.length,
+        data: result
+      },
       { status: StatusCode.SuccessOK, headers: responseHeadersInit }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
