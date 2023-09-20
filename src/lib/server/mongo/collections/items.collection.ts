@@ -24,6 +24,8 @@ export class ItemsCollection extends BaseCollection<ItemSchema> {
     const definesSubmitted = typeof submitted === 'boolean';
     const { count, skip, sort_by, sort_order } = ItemsCollection.makeQuery(params);
 
+    if (!contributor_id) delete filter.merged;
+
     return await this.context
       .aggregate<WithId<ItemSchema>>([
         { $match: filter },

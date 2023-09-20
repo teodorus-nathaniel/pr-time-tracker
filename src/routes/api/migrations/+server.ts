@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
     );
 
     return json(
-      { message: 'success', extra: result.length, data: _items },
+      { message: 'success', extra: result.length, data: result },
       { status: StatusCode.SuccessOK, headers: responseHeadersInit }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
