@@ -78,7 +78,7 @@
   <ul class="grid gap-4 md:gap-8">
     {#each prs as pr, i}
       <!-- Force component destroy/re-render to get updated `pr` object values. -->
-      {#key invalidateCache ? pr : `${i} ${$activeTab.position}`}
+      {#key `${i}${invalidateCache ? pr.submission?.updated_at : $activeTab.position}`}
         <PR
           data={pr}
           {onSubmit}

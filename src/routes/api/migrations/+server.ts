@@ -5,12 +5,11 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 import { responseHeadersInit } from '$lib/config';
 import { jsonError, transform } from '$lib/utils';
-// import { submissions } from '$lib/server/mongo/collections';
-import { contributors, items, submissions } from '$lib/server/mongo/collections';
+import { items } from '$lib/server/mongo/collections';
 
 export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) => {
-  const authToken = '1be7b56cF2Gdfkr';
-  const canUnsetDeprecated =
+  const authToken = '1be7b56cF2Gdfkrghsdsfdgd';
+  let canUnsetDeprecated =
     hostname.includes('invoice.holdex.io') &&
     transform<boolean>(searchParams.get('unset_deprecated'));
 
@@ -22,65 +21,26 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
   }
 
   try {
-    const [_items, _contributors] = await Promise.all([
-      items.context.find().toArray(), //{ count: 5000 }),
-      contributors.getMany({ count: 100 })
+    const [_items] = await Promise.all([
+      items.context.find().toArray() //{ count: 5000 }),
+      // contributors.getMany({ count: 100 })
       // submissions.context.deleteMany()
     ]);
     const result = await Promise.all(
       _items.map(async (item) => {
-        const { submission_ids } = item;
         let needUpdate = false;
 
-        const contributor = _contributors.find(({ login }) => login === item.owner);
+        // const contributor = _contributors.find(({ login }) => login === item.owner);
 
-        if (contributor) {
-          if ((item as any).submitted) {
-            needUpdate = true;
-
-            if (!submission_ids?.length) {
-              if (item.submission) {
-                item.submission_ids = [item.submission._id!];
-              } else {
-                await submissions.create({
-                  item_id: item.id,
-                  owner_id: contributor.id,
-                  hours: parseFloat((item as any).hours),
-                  experience: (item as any).experience
-                });
-              }
-              // await submissions.context.deleteMany({ item_id: item.id });
-            } else {
-              try {
-                await submissions.create({
-                  item_id: item.id,
-                  owner_id: contributor.id,
-                  hours: parseFloat((item as any).hours),
-                  experience: (item as any).experience
-                });
-              } catch (e) {
-                //
-              }
-            }
-          }
-
-          // if (!(item as any).owner_id) {
-          //   item.owner_id = contributor.id;
-          //   needUpdate = true;
-          // }
-        }
-
-        if (item.submission_ids?.length) {
-          // needUpdate = true;
-          // item.submission_ids = [];
-        }
-
-        if (canUnsetDeprecated || (item as any).submitted) {
+        if (item.submission) {
           needUpdate = true;
+          delete item.submission;
+          canUnsetDeprecated = true;
+        }
+
+        if (canUnsetDeprecated) {
+          // needUpdate = true;
           // delete item.contributors;
-          delete (item as any).submitted;
-          delete (item as any).hours;
-          delete (item as any).experience;
         }
 
         if (needUpdate) {
@@ -88,13 +48,10 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
             { _id: item._id },
             {
               $set: item,
-              ...(canUnsetDeprecated || (item as any).submitted
+              ...(canUnsetDeprecated
                 ? {
                     $unset: {
-                      // closedAt: ''
-                      submitted: '',
-                      hours: '',
-                      experience: ''
+                      submission: ''
                     }
                   }
                 : {})
