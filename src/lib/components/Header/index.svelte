@@ -1,19 +1,16 @@
 <script lang="ts">
-  /** externals */
+  /** deps */
   import { page } from '$app/stores';
   import { invalidate } from '$app/navigation';
 
-  /** types */
   import type { User } from '@octokit/webhooks-types';
   import type { ToggleProps } from '../types';
 
-  /** internals */
   import Button from '$lib/components/Button/index.svelte';
   import Toggle from '$lib/components/Toggle/index.svelte';
   import PageTitle from '$lib/components/PageTitle/index.svelte';
   import { invalidations, routes } from '$lib/config';
 
-  /** siblings */
   import { snackbar } from '../Snackbar';
   import Avatar from '../Avatar/index.svelte';
 
@@ -50,7 +47,7 @@
   $: isArchiveRoute = $page.url.pathname.includes('archive');
 </script>
 
-<header class="animate-fadeIn">
+<header class="animate-fadeIn sticky -top-36 z-20 md:-top-40">
   <div class="pb-4 flex justify-between border-b border-l3 md:pb-8">
     <div class="flex gap-3 items-center">
       <Avatar url={user.avatar_url} alt={user.name} />
