@@ -23,8 +23,8 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
 
   try {
     const [_items, _contributors] = await Promise.all([
-      items.getMany({ count: 1000 }),
-      contributors.getMany()
+      items.context.find().toArray(), //{ count: 5000 }),
+      contributors.getMany({ count: 100 })
       // submissions.context.deleteMany()
     ]);
     const result = await Promise.all(
@@ -35,15 +35,33 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
         const contributor = _contributors.find(({ login }) => login === item.owner);
 
         if (contributor) {
-          if (!submission_ids?.length && (item as any).submitted) {
-            // needUpdate = true;
-            await submissions.create({
-              item_id: item.id,
-              owner_id: contributor.id,
-              hours: parseFloat((item as any).hours),
-              experience: (item as any).experience
-            });
-            // await submissions.context.deleteMany({ item_id: item.id });
+          if ((item as any).submitted) {
+            needUpdate = true;
+
+            if (!submission_ids?.length) {
+              if (item.submission) {
+                item.submission_ids = [item.submission._id!];
+              } else {
+                await submissions.create({
+                  item_id: item.id,
+                  owner_id: contributor.id,
+                  hours: parseFloat((item as any).hours),
+                  experience: (item as any).experience
+                });
+              }
+              // await submissions.context.deleteMany({ item_id: item.id });
+            } else {
+              try {
+                await submissions.create({
+                  item_id: item.id,
+                  owner_id: contributor.id,
+                  hours: parseFloat((item as any).hours),
+                  experience: (item as any).experience
+                });
+              } catch (e) {
+                //
+              }
+            }
           }
 
           // if (!(item as any).owner_id) {
@@ -70,7 +88,7 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
             { _id: item._id },
             {
               $set: item,
-              ...(canUnsetDeprecated
+              ...(canUnsetDeprecated || (item as any).submitted
                 ? {
                     $unset: {
                       // closedAt: ''
@@ -89,7 +107,11 @@ export const POST: RequestHandler = async ({ url: { searchParams, hostname } }) 
     );
 
     return json(
-      { message: 'success', extra: result.length, data: _items },
+      {
+        message: 'success',
+        extra: result.length,
+        data: result
+      },
       { status: StatusCode.SuccessOK, headers: responseHeadersInit }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
