@@ -10,21 +10,18 @@ import { verifyAuth } from '$lib/server/github';
 
 import { UserRole } from '$lib/@types';
 
-export const POST: RequestHandler = async ({ url: { searchParams }, cookies }) => {
-  const authToken = '1be7b56cF2Gdfkrghsdsf';
+export const POST: RequestHandler = async ({ url: { searchParams, pathname }, cookies }) => {
   // const canUnsetDeprecated =
   // hostname.includes('invoice.holdex.io') &&
   // transform<boolean>(searchParams.get('unset_deprecated'));
 
-  if (transform<string>(searchParams.get('token')) !== authToken) {
-    return jsonError(
-      Error('You do not have the right to access this resource.'),
-      '/api/migrations'
-    );
-  }
-
   try {
-    await verifyAuth(cookies);
+    await verifyAuth(
+      pathname,
+      'POST',
+      cookies,
+      () => transform<string>(searchParams.get('token')) === '1be7b56cF2Gdfkrghsdsf'
+    );
 
     const [, _contributors] = await Promise.all([
       items.context.find().toArray(), //{ count: 5000 }),

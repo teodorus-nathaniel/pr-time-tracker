@@ -10,9 +10,9 @@ import { verifyAuth } from '$lib/server/github';
 
 import { Approval } from '$lib/@types';
 
-export const GET: RequestHandler = async ({ params, cookies }) => {
+export const GET: RequestHandler = async ({ params, cookies, url }) => {
   try {
-    await verifyAuth(cookies);
+    await verifyAuth(url, 'GET', cookies);
 
     const id = Number(params.id);
     const contributor = await contributors.getOne({ id });

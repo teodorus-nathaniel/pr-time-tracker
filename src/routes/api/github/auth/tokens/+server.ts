@@ -2,12 +2,12 @@ import { json, redirect } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { names, serializeCookie } from '$lib/server/cookie';
+import { cookieNames, serializeCookie } from '$lib/server/cookie';
 import { refreshUserToken } from '$lib/server/github';
 
 export const GET: RequestHandler = async ({ cookies }) => {
-  let accessToken = cookies.get(names.accessTokenCookieName);
-  let refreshToken = cookies.get(names.refreshTokenCookieName);
+  let accessToken = cookies.get(cookieNames.accessTokenCookieName);
+  let refreshToken = cookies.get(cookieNames.refreshTokenCookieName);
 
   if (accessToken && accessToken !== 'undefined') {
     return json({ accessToken, refreshToken }, { status: 200 });
@@ -17,14 +17,14 @@ export const GET: RequestHandler = async ({ cookies }) => {
     refreshToken = authentication.refreshToken;
 
     cookies.set(
-      names.accessTokenCookieName,
+      cookieNames.accessTokenCookieName,
       accessToken || '',
       serializeCookie({
         expires: new Date(authentication.expiresAt)
       })
     );
     cookies.set(
-      names.refreshTokenCookieName,
+      cookieNames.refreshTokenCookieName,
       refreshToken || '',
       serializeCookie({
         expires: new Date(authentication.refreshTokenExpiresAt)

@@ -6,7 +6,7 @@ import {
   exchangeWebFlowCode,
   type GitHubAppAuthenticationWithRefreshToken
 } from '$lib/server/github';
-import { names, serializeCookie } from '$lib/server/cookie';
+import { cookieNames, serializeCookie } from '$lib/server/cookie';
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
   const code = url.searchParams.get('code') as string;
@@ -17,14 +17,14 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
   const authentication = response.authentication as GitHubAppAuthenticationWithRefreshToken;
   cookies.set(
-    names.accessTokenCookieName,
+    cookieNames.accessTokenCookieName,
     authentication.token,
     serializeCookie({
       expires: new Date(authentication.expiresAt)
     })
   );
   cookies.set(
-    names.refreshTokenCookieName,
+    cookieNames.refreshTokenCookieName,
     authentication.refreshToken,
     serializeCookie({
       expires: new Date(authentication.refreshTokenExpiresAt)

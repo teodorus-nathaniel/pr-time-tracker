@@ -7,9 +7,9 @@ import { responseHeadersInit } from '$lib/config';
 import { contributors } from '$lib/server/mongo/collections';
 import { verifyAuth } from '$lib/server/github';
 
-export const GET: RequestHandler = async ({ cookies }) => {
+export const GET: RequestHandler = async ({ cookies, url }) => {
   try {
-    await verifyAuth(cookies);
+    await verifyAuth(url, 'GET', cookies);
 
     return json(
       { message: 'success', result: await contributors.getMany() },
