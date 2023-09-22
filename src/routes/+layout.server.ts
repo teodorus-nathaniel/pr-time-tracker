@@ -10,7 +10,7 @@ import type { User } from '$lib/server/github';
 import { REDIRECT_TEMP } from '$lib/constants';
 import { contributors } from '$lib/server/mongo/collections';
 
-export const load: LayoutServerLoad = async ({ fetch, depends, url }) => {
+export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) => {
   depends(invalidations.user);
 
   const data: { user: User | null } = await fetch('/api/github/auth/profile').then((res) =>
@@ -24,8 +24,6 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url }) => {
     user = { ...data.user, ...contributor, _id: _id?.toString() };
     data.user = user;
   }
-
-  console.log({ data });
 
   if (!user && !url.pathname.includes(routes.login.path)) {
     throw redirect(REDIRECT_TEMP, routes.login.path);

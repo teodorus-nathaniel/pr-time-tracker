@@ -3,23 +3,16 @@ import StatusCode from 'status-code-enum';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import clientPromise from '$lib/server/mongo';
-import config from '$lib/server/config';
-import { MAX_DATA_CHUNK } from '$lib/constants';
 import { responseHeadersInit } from '$lib/config';
+import { contributors } from '$lib/server/mongo/collections';
+import { verifyAuth } from '$lib/server/github';
 
-import { CollectionNames, type ContributorSchema } from '$lib/@types';
-
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ cookies }) => {
   try {
-    const mongoClient = await clientPromise;
-    const collection = mongoClient
-      .db(config.mongoDBName)
-      .collection<ContributorSchema>(CollectionNames.CONTRIBUTORS);
-    const contributors = await collection.find().limit(MAX_DATA_CHUNK).toArray();
+    await verifyAuth(cookies);
 
     return json(
-      { message: 'success', result: contributors },
+      { message: 'success', result: await contributors.getMany() },
       { status: StatusCode.SuccessOK, headers: responseHeadersInit }
     );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

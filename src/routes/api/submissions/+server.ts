@@ -6,9 +6,12 @@ import type { SubmissionSchema } from '$lib/@types';
 import { SUCCESS_OK } from '$lib/constants';
 import { jsonError, transform } from '$lib/utils';
 import { items, submissions } from '$lib/server/mongo/collections';
+import { verifyAuth } from '$lib/server/github';
 
-export const GET: RequestHandler = async ({ url: { searchParams } }) => {
+export const GET: RequestHandler = async ({ url: { searchParams }, cookies }) => {
   try {
+    await verifyAuth(cookies);
+
     const id = transform<string>(searchParams.get('id'));
     const data = await (id ? submissions.getOne(id) : submissions.getMany());
 
@@ -18,8 +21,10 @@ export const GET: RequestHandler = async ({ url: { searchParams } }) => {
   }
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
+    await verifyAuth(cookies);
+
     return json({
       data: await submissions.create(transform<SubmissionSchema>(await request.json())!)
     });
@@ -28,8 +33,10 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request, cookies }) => {
   try {
+    await verifyAuth(cookies);
+
     const submission = await submissions.update(
       transform<SubmissionSchema>(await request.json(), {
         pick: ['_id', 'hours', 'experience', 'approval']

@@ -13,9 +13,12 @@ import type {
   Organization,
   Repository
 } from '@octokit/webhooks-types';
+import type { Cookies } from '@sveltejs/kit';
 
 import config from '$lib/server/config';
 import { default as clientConfig } from '$lib/config';
+
+import { names } from '../cookie';
 
 const app = new App({
   appId: config.github.appId,
@@ -49,6 +52,22 @@ export async function refreshUserToken(token: string) {
     clientId: clientConfig.github.clientId,
     clientSecret: config.github.clientSecret,
     refreshToken: token
+  });
+}
+
+export async function verifyAuth(tokenOrCookie: string | Cookies) {
+  const token =
+    typeof tokenOrCookie === 'string'
+      ? tokenOrCookie
+      : tokenOrCookie.get(names.accessTokenCookieName);
+
+  if (!token) throw Error("You're not authenticated. Please, log in.");
+
+  return await oauthMethods.checkToken({
+    clientType: 'github-app',
+    clientId: clientConfig.github.clientId,
+    clientSecret: config.github.clientSecret,
+    token
   });
 }
 

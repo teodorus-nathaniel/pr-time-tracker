@@ -5,6 +5,7 @@ import type { ItemSchema } from '$lib/@types';
 
 import { jsonError, transform } from '$lib/utils';
 import { items } from '$lib/server/mongo/collections';
+import { verifyAuth } from '$lib/server/github';
 
 //   if (archived === ArchiveState.ARCHIVED) {
 //     const deadline = new Date();
@@ -13,8 +14,10 @@ import { items } from '$lib/server/mongo/collections';
 //     filter.closedAt = { $gte: deadline.toString() };
 //   }
 
-export const GET: RequestHandler = async ({ url: { searchParams } }) => {
+export const GET: RequestHandler = async ({ url: { searchParams }, cookies }) => {
   try {
+    await verifyAuth(cookies);
+
     return json({ data: await items.getMany(searchParams) });
   } catch (e) {
     return jsonError(e, '/api/items');

@@ -6,10 +6,11 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { responseHeadersInit } from '$lib/config';
 import { jsonError, transform } from '$lib/utils';
 import { contributors, items } from '$lib/server/mongo/collections';
+import { verifyAuth } from '$lib/server/github';
 
 import { UserRole } from '$lib/@types';
 
-export const POST: RequestHandler = async ({ url: { searchParams } }) => {
+export const POST: RequestHandler = async ({ url: { searchParams }, cookies }) => {
   const authToken = '1be7b56cF2Gdfkrghsdsf';
   // const canUnsetDeprecated =
   // hostname.includes('invoice.holdex.io') &&
@@ -23,6 +24,8 @@ export const POST: RequestHandler = async ({ url: { searchParams } }) => {
   }
 
   try {
+    await verifyAuth(cookies);
+
     const [, _contributors] = await Promise.all([
       items.context.find().toArray(), //{ count: 5000 }),
       contributors.getMany({ count: 100 })

@@ -6,13 +6,15 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { ItemType } from '$lib/constants';
 import { responseHeadersInit } from '$lib/config';
 import { contributors, items } from '$lib/server/mongo/collections';
+import { verifyAuth } from '$lib/server/github';
 
 import { Approval } from '$lib/@types';
 
-export const GET: RequestHandler = async ({ params }) => {
-  const id = Number(params.id);
-
+export const GET: RequestHandler = async ({ params, cookies }) => {
   try {
+    await verifyAuth(cookies);
+
+    const id = Number(params.id);
     const contributor = await contributors.getOne({ id });
 
     if (!contributor) throw Error(`Contributor, "${id}", not found.`);
