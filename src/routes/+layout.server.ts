@@ -25,6 +25,8 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url }) => {
     data.user = user;
   }
 
+  console.log({ data });
+
   if (!user && !url.pathname.includes(routes.login.path)) {
     throw redirect(REDIRECT_TEMP, routes.login.path);
   } else if (user && url.pathname.includes(routes.login.path)) {
