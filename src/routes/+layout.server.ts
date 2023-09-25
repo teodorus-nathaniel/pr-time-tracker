@@ -9,8 +9,9 @@ import { invalidations, routes } from '$lib/config';
 import type { User } from '$lib/server/github';
 import { REDIRECT_TEMP } from '$lib/constants';
 import { contributors } from '$lib/server/mongo/collections';
+import { cookieNames } from '$lib/server/cookie';
 
-export const load: LayoutServerLoad = async ({ fetch, depends, url }) => {
+export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) => {
   depends(invalidations.user);
 
   const data: { user: User | null } = await fetch('/api/github/auth/profile').then((res) =>
@@ -23,6 +24,7 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url }) => {
 
     user = { ...data.user, ...contributor, _id: _id?.toString() };
     data.user = user;
+    cookies.set(cookieNames.role, user.role);
   }
 
   if (!user && !url.pathname.includes(routes.login.path)) {

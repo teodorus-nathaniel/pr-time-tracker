@@ -2,7 +2,8 @@ import type { CookieSerializeOptions } from 'cookie';
 
 import { isDev } from '$lib/config';
 
-export const names = {
+export const cookieNames = {
+  role: 'invoicingRole',
   accessTokenCookieName: 'invoicingAccessToken',
   refreshTokenCookieName: 'invoicingRefreshToken'
 };

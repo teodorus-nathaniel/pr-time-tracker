@@ -2,22 +2,22 @@ import { json } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 
-import { names, serializeCookie } from '$lib/server/cookie';
+import { cookieNames, serializeCookie } from '$lib/server/cookie';
 import { logout } from '$lib/server/github';
 
 export const GET: RequestHandler = async ({ cookies }) => {
-  const accessToken = cookies.get(names.accessTokenCookieName);
+  const accessToken = cookies.get(cookieNames.accessTokenCookieName);
   if (accessToken) {
     await logout(accessToken);
   }
   cookies.delete(
-    names.accessTokenCookieName,
+    cookieNames.accessTokenCookieName,
     serializeCookie({
       expires: new Date(0)
     })
   );
   cookies.delete(
-    names.refreshTokenCookieName,
+    cookieNames.refreshTokenCookieName,
     serializeCookie({
       expires: new Date(0)
     })

@@ -13,9 +13,14 @@ import type {
   Organization,
   Repository
 } from '@octokit/webhooks-types';
+import type { Cookies } from '@sveltejs/kit';
 
 import config from '$lib/server/config';
 import { default as clientConfig } from '$lib/config';
+
+import { cookieNames } from '../cookie';
+
+import { UserRole } from '$lib/@types';
 
 const app = new App({
   appId: config.github.appId,
@@ -51,6 +56,77 @@ export async function refreshUserToken(token: string) {
     refreshToken: token
   });
 }
+
+export const verifyAuth = async (
+  pathnameOrURL: string | URL,
+  action: 'POST' | 'GET' | 'PATCH' | 'DELETE',
+  cookie: Cookies,
+  customCheck?: (role: UserRole | undefined) => Promise<boolean> | boolean
+) => {
+  await checkAuthToken(cookie);
+  await authorize(
+    typeof pathnameOrURL === 'string' ? pathnameOrURL : pathnameOrURL.pathname,
+    action,
+    cookie,
+    customCheck
+  );
+};
+
+export const checkAuthToken = async (tokenOrCookie: string | Cookies) => {
+  const token =
+    typeof tokenOrCookie === 'string'
+      ? tokenOrCookie
+      : tokenOrCookie.get(cookieNames.accessTokenCookieName);
+
+  if (!token) throw Error("You're not authenticated. Please, log in.");
+
+  return await oauthMethods.checkToken({
+    clientType: 'github-app',
+    clientId: clientConfig.github.clientId,
+    clientSecret: config.github.clientSecret,
+    token
+  });
+};
+
+export const authorize = async (
+  pathname: string,
+  action: 'POST' | 'GET' | 'PATCH' | 'DELETE',
+  cookie: Cookies,
+  customCheck?: (role: UserRole | undefined) => Promise<boolean> | boolean
+) => {
+  const resource = pathname.replace('/api/', '') as
+    | 'items'
+    | 'submissions'
+    | 'migrations'
+    | 'contributors';
+  const role = cookie.get(cookieNames.role) as UserRole | undefined;
+  const isManager = role === UserRole.MANAGER;
+  const isContributor = role === UserRole.CONTRIBUTOR;
+
+  try {
+    if (customCheck && !(await customCheck(role))) throw false;
+
+    switch (resource) {
+      case 'items':
+        if (action !== 'GET' && !isManager) throw false;
+        return true;
+      case 'contributors':
+        if (!isManager) throw false;
+        return true;
+      case 'submissions':
+        if (action === 'POST' && !isContributor) throw false;
+        return true;
+      case 'migrations':
+        return true;
+    }
+  } catch (e) {
+    throw Error(
+      `You are not permitted to ${
+        action === 'GET' ? 'access this resource' : 'perform this action'
+      }.`
+    );
+  }
+};
 
 type GitHubAppAuthenticationWithRefreshToken = oauthMethods.GitHubAppAuthenticationWithRefreshToken;
 export type {
