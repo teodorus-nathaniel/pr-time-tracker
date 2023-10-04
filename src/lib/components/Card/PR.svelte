@@ -7,6 +7,7 @@
   import Button from '$lib/components/Button/index.svelte';
   import Toggle from '$lib/components/Toggle/index.svelte';
   import Input from '$lib/components/Input/index.svelte';
+  import Icon from '$lib/components/Icon/index.svelte';
 
   import { snackbar } from '../Snackbar';
 
@@ -23,7 +24,6 @@
   const href = data.url.replace(/.*\/repos/, 'https://github.com').replace('pulls', 'pull');
   let submissionPayload: Partial<SubmissionSchema> = data.submission || {};
   let submissionApproved = false;
-  let positiveExperience = true;
   let activeReactionButton: ToggleProps['activeButton'] = !data.submission?.experience
     ? ''
     : data.submission?.experience === 'negative'
@@ -31,7 +31,6 @@
     : 'left';
 
   /** react-ibles */
-  $: positiveExperience = data.submission?.experience === Experience.POSITIVE;
   $: submissionApproved = data.submission?.approval === Approval.APPROVED;
   $: if (submissionApproved && !isAdmin) isReadonly = true;
   $: data.number = Number(data.url?.split('/').slice(-1));
@@ -44,7 +43,11 @@
   } relative border border-solid border-l4 bg-l1 shadow-input rounded-xl text-t1 transition-all list-none animate-fadeIn  ${
     submissionApproved && !isAdmin ? 'opacity-80' : ''
   } dark:bg-l2 xs:w-full`}>
-  <div class="p-4 flex gap-4 justify-between items-center">
+  <div class="p-4 flex gap-4 items-center">
+    <span title={data.merged ? 'Closed' : 'Open'}>
+      <Icon name="pr-{data.merged ? 'closed' : 'open'}" class="w-5 h-5 min-w-fit" />
+    </span>
+
     <a {href} target="_blank" class="link">
       <h2 class="text-t3">{data.org} / {data.repo} / #{data.number}</h2>
     </a>
@@ -53,15 +56,17 @@
       {href}
       variant="icon"
       iconProps={{ name: 'github', width: '1.25rem' }}
-      class="px-0"
+      class="px-0 ml-auto"
       target="_blank"
       aria-label="GitHub" />
   </div>
 
   <p class="p-4 border-y border-l4 text-h4-l font-satoshi">{data.title}</p>
 
+  <slot name="author-et-al" />
+
   <form
-    class="p-4 text-t3 flex justify-between items-center flex-wrap gap-2 gap-y-4"
+    class="px-4 my-4 text-t3 flex justify-between items-center flex-wrap gap-2 gap-y-4"
     name={data.title}
     on:submit|preventDefault={async (e) => {
       if (!onSubmit) return;
@@ -142,7 +147,7 @@
         class="w-full min-w-full ml-auto {submissionApproved && !loading
           ? '!text-neg'
           : ''} sm:min-w-fit"
-        disabled={loading} />
+        disabled={loading || !data.merged || (isAdmin && !data.submission)} />
     {/if}
   </form>
 </li>

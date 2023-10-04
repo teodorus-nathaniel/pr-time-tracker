@@ -8,6 +8,7 @@
   import PRs from '$lib/layouts/PRs/index.svelte';
   import { activeTab } from '$lib/components/Toggle';
   import { getPRs } from '$lib/utils';
+  import ManagerPR from '$lib/components/Card/ManagerPR.svelte';
 
   import { Approval, type ItemSchema } from '$lib/@types';
 
@@ -17,7 +18,9 @@
   /** vars */
   const prs: Record<'pending' | 'approved', ItemSchema[]> = {
     pending:
-      data.contributor?.prs.filter((pr) => pr.submission?.approval === Approval.PENDING) || [],
+      data.contributor?.prs.filter(
+        (pr) => pr.submission?.approval === Approval.PENDING || !pr.submission
+      ) || [],
     approved: []
   };
   let isApprovedTab = false;
@@ -46,5 +49,9 @@
 
 <PRs
   context="contributor"
-  query={{ approvals: isApprovedTab ? [Approval.APPROVED] : [Approval.PENDING], submitted: true }}
-  bind:prs={prs[isApprovedTab ? 'approved' : 'pending']} />
+  query={{
+    approvals: isApprovedTab ? [Approval.APPROVED] : [Approval.PENDING],
+    submitted: undefined
+  }}
+  bind:prs={prs[isApprovedTab ? 'approved' : 'pending']}
+  PRCard={ManagerPR} />
