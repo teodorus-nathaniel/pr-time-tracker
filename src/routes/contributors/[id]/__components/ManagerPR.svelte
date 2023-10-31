@@ -63,9 +63,11 @@
       otherContributors = [];
       breakdown =
         data.contributors?.map((contributor) => {
-          const { id, rate, avatarUrl, name } = contributor;
+          const { id, rate, avatarUrl, name, login } = contributor;
           const submission = data.submissions?.find(({ owner_id }) => owner_id === id);
-          const cost = Number(((submission?.hours || 0) * rate).toFixed(2));
+          const cost = Number(
+            ((submission?.hours || 0) * (submission?.rate || rate || 0)).toFixed(2)
+          );
 
           totalCost += cost;
           if (name === data.owner) owner = contributor;
@@ -77,7 +79,7 @@
             rate,
             avatarUrl,
             hours: submission?.hours,
-            name,
+            name: name || login,
             cost
           };
         }) || [];
@@ -98,7 +100,7 @@
           {#if owner}
             <Avatar
               url={owner.avatarUrl}
-              alt={owner.name}
+              alt={owner.name || owner.login}
               size="extra-small"
               withIcon={{
                 name: 'check-circle',
