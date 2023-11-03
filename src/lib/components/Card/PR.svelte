@@ -101,6 +101,13 @@
         });
       }
 
+      if ((submissionPayload.hours || 0) < 0) {
+        return ($snackbar = {
+          text: `Hours should be greater than or equal to 0.`,
+          type: 'info'
+        });
+      }
+
       submissionPayload.owner_id = $page.data.user.id;
       submissionPayload.item_id = data.id;
       submissionPayload.experience =
