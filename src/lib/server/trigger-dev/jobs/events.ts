@@ -41,7 +41,7 @@ client.defineJob({
   // This is triggered by an event using eventTrigger. You can also trigger Jobs with webhooks, on schedules, and more: https://trigger.dev/docs/documentation/concepts/triggers/introduction
   trigger: github.triggers.org({
     event: events.onIssue,
-    org: 'itacha-protocol'
+    org: 'ithaca-protocol'
   }),
   run: async (payload, io, ctx) => createJob(payload, io, ctx)
 });
