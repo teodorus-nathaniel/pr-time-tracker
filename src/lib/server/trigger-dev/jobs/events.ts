@@ -35,13 +35,14 @@ client.defineJob({
 
 client.defineJob({
   // This is the unique identifier for your Job, it must be unique across all Jobs in your project
-  id: 'events-streaming_ithaca',
+  id: 'events-streaming_ithaca_interface',
   name: 'Streaming events for Github using app',
   version: '0.0.1',
   // This is triggered by an event using eventTrigger. You can also trigger Jobs with webhooks, on schedules, and more: https://trigger.dev/docs/documentation/concepts/triggers/introduction
-  trigger: github.triggers.org({
+  trigger: github.triggers.repo({
     event: events.onIssue,
-    org: 'ithaca-protocol'
+    owner: 'ithaca-protocol',
+    repo: 'ithaca-interface'
   }),
   run: async (payload, io, ctx) => createJob(payload, io, ctx)
 });
