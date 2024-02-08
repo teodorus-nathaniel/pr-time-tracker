@@ -34,15 +34,15 @@ export async function createJob(
               : merged
               ? EventType.PR_MERGED
               : EventType.PR_CLOSED,
-          id: pull_request.id,
+          id: pull_request.number,
           index: 1,
           organization: organization?.login || 'holdex',
           owner: user.login,
           repository: repository.name,
           sender: user.login,
           title: pull_request.title,
-          created_at: pull_request.created_at,
-          updated_at: pull_request.updated_at
+          created_at: Math.round(new Date(pull_request.created_at).getTime() / 1000).toFixed(0),
+          updated_at: Math.round(new Date(pull_request.updated_at).getTime() / 1000).toFixed(0)
         });
         await io.wait('wait for call', 5);
       } else {

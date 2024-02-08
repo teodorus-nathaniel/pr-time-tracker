@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
       // store these events in gcloud
       await insertEvent({
         action: EventType.PR_SUBMISSION_CREATED,
-        id: pr.id,
+        id: pr.number as number,
         index: 1,
         organization: pr.org,
         owner: pr.owner,
@@ -51,8 +51,8 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
         sender: contributor!,
         title: pr.title,
         payload: body?.hours,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_at: Math.round(new Date().getTime() / 1000).toFixed(0),
+        updated_at: Math.round(new Date().getTime() / 1000).toFixed(0)
       });
     }
     return json({
@@ -97,7 +97,7 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
           user!.role === UserRole.MANAGER
             ? EventType.PR_SUBMISSION_APPROVED
             : EventType.PR_SUBMISSION_UPDATED,
-        id: pr.id,
+        id: pr.number as number,
         index: 1,
         organization: pr.org,
         owner: pr.owner,
@@ -105,8 +105,8 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
         sender: user!.login,
         title: pr.title,
         payload: body!.hours,
-        created_at: body!.created_at,
-        updated_at: body!.updated_at
+        created_at: Math.round(new Date(body!.created_at as string).getTime() / 1000).toFixed(0),
+        updated_at: Math.round(new Date(body!.updated_at as string).getTime() / 1000).toFixed(0)
       };
       await insertEvent(gcEvent);
     }

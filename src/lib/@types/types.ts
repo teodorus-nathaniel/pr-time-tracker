@@ -73,6 +73,7 @@ export interface ItemSchema extends TimeStamps {
   contributors?: ContributorSchema[];
   type: ItemType;
   url: string;
+  number?: number;
   total_cost?: number;
   merged?: boolean;
   created_at?: string | number;

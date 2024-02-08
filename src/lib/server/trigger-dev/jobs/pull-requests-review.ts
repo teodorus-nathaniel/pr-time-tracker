@@ -24,15 +24,15 @@ export async function createJob(
       if (review.state === 'approved' || review.state === 'changes_requested') {
         await insertEvent({
           action: review.state === 'approved' ? EventType.PR_APPROVED : EventType.PR_REJECTED,
-          id: pull_request.id,
+          id: pull_request.number,
           index: 1,
           organization: organization?.login || 'holdex',
           owner: pull_request.user.login,
           repository: repository.name,
           sender: pull_request.user.login,
           title: pull_request.title,
-          created_at: pull_request.created_at,
-          updated_at: pull_request.updated_at
+          created_at: Math.round(new Date(pull_request.created_at).getTime() / 1000).toFixed(0),
+          updated_at: Math.round(new Date(pull_request.updated_at).getTime() / 1000).toFixed(0)
         });
       }
 
