@@ -51,8 +51,8 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
         sender: contributor!,
         title: pr.title,
         payload: body?.hours,
-        created_at: body?.created_at,
-        updated_at: body?.updated_at
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
     }
     return json({
@@ -77,7 +77,9 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
 
       body = transform<SubmissionSchema>(await request.json(), {
         pick: ['_id' as keyof SubmissionSchema].concat(
-          user.role === UserRole.MANAGER ? ['approval'] : ['hours', 'experience', 'owner_id']
+          user.role === UserRole.MANAGER
+            ? ['approval', 'item_id', 'owner_id', 'created_at', 'updated_at']
+            : ['hours', 'experience', 'owner_id', 'created_at', 'updated_at']
         )
       })!;
 
@@ -90,7 +92,7 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
     const pr = await items.getOne({ id: body!.item_id });
     if (pr) {
       // store these events in gcloud
-      await insertEvent({
+      const gcEvent = {
         action:
           user!.role === UserRole.MANAGER
             ? EventType.PR_SUBMISSION_APPROVED
@@ -103,8 +105,10 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
         sender: user!.login,
         title: pr.title,
         payload: body!.hours,
-        created_at: body!.created_at
-      });
+        created_at: body!.created_at,
+        updated_at: body!.updated_at
+      };
+      await insertEvent(gcEvent);
     }
 
     const submission = await submissions.update(body!, { user: user! });
