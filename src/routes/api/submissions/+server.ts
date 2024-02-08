@@ -31,11 +31,10 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
     let body: SubmissionSchema = {} as SubmissionSchema;
     let contributor: string;
 
-    await verifyAuth(url, 'POST', cookies, async ({ role, rate, login }) => {
+    await verifyAuth(url, 'POST', cookies, async ({ rate, login, id }) => {
       body = transform<SubmissionSchema>({ ...(await request.json()), rate })!;
       contributor = login;
-
-      return role !== UserRole.MANAGER;
+      return body.owner_id === id;
     });
 
     // get pr item
@@ -52,7 +51,8 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
         sender: contributor!,
         title: pr.title,
         payload: body?.hours,
-        created_at: body?.created_at
+        created_at: body?.created_at,
+        updated_at: body?.updated_at
       });
     }
     return json({
