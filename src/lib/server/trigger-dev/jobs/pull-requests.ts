@@ -69,7 +69,8 @@ export async function createJob<T extends IOWithIntegrations<{ github: Github }>
             workflow_id: 'cost.yml',
             ref: pull_request.head.ref,
             inputs: {
-              cost: submission?.hours?.toString() || ''
+              cost: submission?.hours?.toString() || '',
+              pr_number: pull_request.number
             }
           })
         );

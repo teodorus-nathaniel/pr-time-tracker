@@ -141,7 +141,8 @@ export const dispatchWorkflow = async (org: string, repo: string, prNumber: numb
     workflow_id: 'cost.yml',
     ref: data.head.ref,
     inputs: {
-      cost: hours
+      cost: hours,
+      pr_number: prNumber
     }
   });
 };
