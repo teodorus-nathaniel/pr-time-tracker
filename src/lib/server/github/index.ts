@@ -142,7 +142,7 @@ export const dispatchWorkflow = async (org: string, repo: string, prNumber: numb
     ref: data.head.ref,
     inputs: {
       cost: hours,
-      pr_number: prNumber
+      pr_number: prNumber.toString()
     }
   });
 };
