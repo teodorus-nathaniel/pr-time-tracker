@@ -70,7 +70,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Github }>
             ref: pull_request.head.ref,
             inputs: {
               cost: submission?.hours?.toString() || '',
-              pr_number: pull_request.number
+              pr_number: pull_request.number.toString()
             }
           })
         );
