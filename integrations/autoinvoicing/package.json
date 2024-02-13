@@ -1,6 +1,6 @@
 {
   "name": "@holdex/autoinvoicing",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "The Autoinvoicing GitHub integration for Trigger.dev",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,6 +21,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "build": "npm run clean && npm run build:tsup",
+    "prepare": "npm run build",
     "build:tsup": "tsup"
   },
   "dependencies": {
