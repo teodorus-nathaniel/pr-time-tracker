@@ -29,7 +29,7 @@ function webhookData(data: any): data is WebhookData {
 
 export function createRepoEventSource(
   integration: Autoinvoicing
-): ExternalSource<Autoinvoicing, { owner: string; repo: string }, 'HTTP', any> {
+): ExternalSource<Autoinvoicing, { owner: string; repo: string }, 'HTTP', {}> {
   return new ExternalSource('HTTP', {
     id: 'github.repo',
     version: '0.1.1',
@@ -122,7 +122,7 @@ export function createRepoEventSource(
 
 export function createOrgEventSource(
   integration: Autoinvoicing
-): ExternalSource<Autoinvoicing, { org: string }, 'HTTP', any> {
+): ExternalSource<Autoinvoicing, { org: string }, 'HTTP', {}> {
   return new ExternalSource('HTTP', {
     id: 'github.org',
     version: '0.1.1',
