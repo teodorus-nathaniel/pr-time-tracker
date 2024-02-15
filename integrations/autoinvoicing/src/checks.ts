@@ -105,4 +105,33 @@ export class Checks {
       onError
     );
   }
+
+  reRun(
+    key: IntegrationTaskKey,
+    params: { name: string; owner: string; repo: string; check_run_id: number }
+  ): GitHubReturnType<Octokit['rest']['checks']['rerequestRun']> {
+    return this.runTask(
+      key,
+      async (client, task) => {
+        const result = await client.rest.checks.rerequestRun({
+          owner: params.owner,
+          repo: params.repo,
+          check_run_id: params.check_run_id
+        });
+        return result.data;
+      },
+      {
+        name: 'Request Check re-run',
+        params,
+        properties: [
+          ...repoProperties(params),
+          {
+            label: 'ID',
+            text: params.check_run_id.toString()
+          }
+        ]
+      },
+      onError
+    );
+  }
 }

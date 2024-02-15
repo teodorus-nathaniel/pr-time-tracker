@@ -34,7 +34,7 @@ import { Octokit } from 'octokit';
 import { createOrgEventSource, createRepoEventSource } from './sources';
 import {
   checkRunCreated,
-  checkSuiteCreated,
+  checkSuiteCompleted,
   issueAssigned,
   issueCommentCreated,
   issueOpened,
@@ -219,6 +219,7 @@ export class Autoinvoicing implements TriggerIntegration {
   createCheckSuite = this.checks.createSuite;
   getCheck = this.checks.get;
   getCheckSuite = this.checks.getSuite;
+  reRunCheck = this.checks.reRun;
 }
 
 function createClientFromOptions(
@@ -573,7 +574,7 @@ const onCheckSuite: EventSpecification<CheckSuiteEvent> = {
   title: 'On check suite',
   source: 'github.com',
   icon: 'github',
-  examples: [checkSuiteCreated],
+  examples: [checkSuiteCompleted],
   parsePayload: (payload) => payload as CheckSuiteEvent,
   runProperties: (payload) => [
     {
