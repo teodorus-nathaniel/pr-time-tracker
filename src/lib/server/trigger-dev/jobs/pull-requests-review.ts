@@ -1,21 +1,24 @@
-import type {
-  TriggerContext,
-  IOWithIntegrations,
-  TriggerIntegration,
-  IntegrationClient
-} from '@trigger.dev/sdk';
+import type { TriggerContext, IOWithIntegrations } from '@trigger.dev/sdk';
+import type { Autoinvoicing } from '@holdex/autoinvoicing';
 
 import type { PullRequestReviewEvent } from '$lib/server/github';
 import { contributors, items } from '$lib/server/mongo/collections';
 import { insertEvent } from '$lib/server/gcloud';
 
-import { getContributorInfo, getPrInfo } from './util';
+import {
+  createCheckRunIfNotExists,
+  getContributorInfo,
+  getInstallationId,
+  getPrInfo
+} from '../../github/util';
 
 import { EventType } from '$lib/@types';
 
-export async function createJob<
-  T extends Record<string, TriggerIntegration<IntegrationClient<any, any>>>
->(payload: PullRequestReviewEvent, io: IOWithIntegrations<T>, ctx: TriggerContext) {
+export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
+  payload: PullRequestReviewEvent,
+  io: T,
+  ctx: TriggerContext
+) {
   const { action, pull_request, repository, organization, sender, review } = payload;
 
   switch (action) {
@@ -37,6 +40,28 @@ export async function createJob<
           created_at: Math.round(new Date(pull_request.created_at).getTime() / 1000).toFixed(0),
           updated_at: Math.round(new Date(pull_request.updated_at).getTime() / 1000).toFixed(0)
         });
+
+        // check if the check run is already available, if not create one.
+        const orgDetails = await io.github.runTask(
+          'get org installation',
+          async () => {
+            const { data } = await getInstallationId(organization?.login as string);
+            return data;
+          },
+          { name: 'Get Organization installation' }
+        );
+
+        await io.github.runTask(
+          'create-check-run-if-not-exists',
+          async () =>
+            createCheckRunIfNotExists(
+              { name: organization?.login as string, installationId: orgDetails.id },
+              repository.name,
+              sender.login,
+              pull_request.head.sha
+            ),
+          { name: 'Create check run for reviewer if not exists' }
+        );
       }
 
       await items.update(

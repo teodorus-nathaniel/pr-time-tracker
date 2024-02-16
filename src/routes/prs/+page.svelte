@@ -24,7 +24,7 @@
   onMount(async () => {
     if (!data.user) return;
     // fetch `submitted` PRs initially since `unsubmitted`s are fetched on server (for faster navigation/load)
-    prs.submitted = await getPRs({ submitted: true, contributor_id: data.user.id, merged: true });
+    prs.submitted = await getPRs({ submitted: true, contributor_id: data.user.id });
   });
 
   onDestroy(() => ($activeTab.position = 'left'));
@@ -35,5 +35,5 @@
 
 <PRs
   bind:prs={prs[isSubmittedPrs ? 'submitted' : 'unsubmitted']}
-  query={{ submitted: isSubmittedPrs, merged: true }}
+  query={{ submitted: isSubmittedPrs }}
   PRCard={PR} />
