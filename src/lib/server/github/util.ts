@@ -135,18 +135,20 @@ const reRequestCheckRun = async (
     check_name: submissionCheckName(senderLogin)
   });
 
-  return client.sendEvent({
-    name: `${org.name}_pr_submission.created`,
-    payload: {
-      organization: org.name,
-      repo: repoName,
-      prId: prInfo.data.id,
-      senderLogin: senderLogin,
-      prNumber: prNumber,
-      senderId: senderId,
-      checkRunId: data.check_runs[data.total_count - 1].id
-    }
-  });
+  if (data.total_count > 0) {
+    return client.sendEvent({
+      name: `${org.name}_pr_submission.created`,
+      payload: {
+        organization: org.name,
+        repo: repoName,
+        prId: prInfo.data.id,
+        senderLogin: senderLogin,
+        prNumber: prNumber,
+        senderId: senderId,
+        checkRunId: data.check_runs[data.total_count - 1].id
+      }
+    });
+  }
 };
 
 const github = new Autoinvoicing({
