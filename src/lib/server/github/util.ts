@@ -32,24 +32,36 @@ const getPrInfo = async (
   const contributorIds = item ? await items.makeContributorIds(item, contributor) : [];
   let prMerged = false;
 
-  if (pr.closed_at && (pr as PullRequest).merged) prMerged = true;
-
-  return {
-    type: ItemType.PULL_REQUEST,
-    id: pr.id,
-    title: pr.title,
-    number: pr.number,
-    org: organization?.login ?? 'holdex',
-    repo: repository.name,
-    owner: pr.user.login || sender.login,
-    contributor_ids: contributorIds,
-    url: pr.url,
-    created_at: pr?.created_at,
-    updated_at: pr?.updated_at,
-    merged: prMerged,
-    closed_at: pr.closed_at ?? undefined,
-    submission_ids: item?.submission_ids || []
-  };
+  if (item) {
+    if (pr?.closed_at && (pr as PullRequest).merged) prMerged = true;
+    return {
+      ...item,
+      title: pr.title,
+      number: item.number || pr.number,
+      contributor_ids: contributorIds,
+      updated_at: pr?.updated_at,
+      closed_at: item.closed_at ? item.closed_at : pr.closed_at || undefined,
+      merged: item.merged ? true : prMerged,
+      submission_ids: item.submission_ids || []
+    };
+  } else {
+    return {
+      type: ItemType.PULL_REQUEST,
+      id: pr.id,
+      title: pr.title,
+      number: pr.number,
+      org: organization?.login ?? 'holdex',
+      repo: repository.name,
+      owner: pr.user.login || sender.login,
+      contributor_ids: contributorIds,
+      url: pr.url,
+      created_at: pr?.created_at,
+      updated_at: pr?.updated_at,
+      merged: false,
+      closed_at: pr.closed_at ?? undefined,
+      submission_ids: []
+    };
+  }
 };
 
 const getSubmissionStatus = async (
