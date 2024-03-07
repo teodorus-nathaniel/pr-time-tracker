@@ -45,7 +45,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
             {
               organization: organization?.login as string,
               repo: repository.name,
-              prId: check_run.pull_requests[0].id || prDetails.fullDatabaseId,
+              prId: check_run.pull_requests[0].id || Number(prDetails.fullDatabaseId),
               prNumber: check_run.pull_requests[0].number || prDetails.number,
               checkRunId: check_run.id,
               senderId: contributor.id,
@@ -232,12 +232,12 @@ async function getPreviousComment<T extends Octokit>(
 async function getPrInfoByCheckRunNodeId<T extends Octokit>(check_run_node_id: string, octokit: T) {
   const data = await octokit.graphql<{ node: CheckRun }>(
     `
-      query($nodeId: String!) {
+      query($nodeId: ID!) {
         node(id: $nodeId) {
           ...on CheckRun {
             checkSuite {
               commit {
-                associatePullRequests(first: 1) {
+                associatedPullRequests(first: 1) {
                   nodes {
                     ...on PullRequest {
                       number
