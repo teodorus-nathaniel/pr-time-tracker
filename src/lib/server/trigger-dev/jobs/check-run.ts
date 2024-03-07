@@ -1,7 +1,14 @@
 import type { TriggerContext, IOWithIntegrations } from '@trigger.dev/sdk';
 import type { Autoinvoicing } from '@holdex/autoinvoicing';
 import type { Octokit } from 'octokit';
-import type { User, Repository, IssueComment } from '@octokit/graphql-schema';
+import type {
+  User,
+  Repository,
+  IssueComment,
+  CheckRun,
+  PullRequestConnection,
+  PullRequest
+} from '@octokit/graphql-schema';
 
 import type { CheckRunEvent } from '$lib/server/github';
 import app from '$lib/server/github';
@@ -23,12 +30,23 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         const match = check_run.name.match(/\((.*?)\)/);
         const contributor = await contributors.getOne({ login: (match as string[])[1] });
         if (contributor) {
+          const prDetails = await io.github.runTask(
+            'get-pr-info',
+            async () => {
+              const { data } = await getInstallationId(organization?.login as string);
+              const octokit = await app.getInstallationOctokit(data.id);
+
+              return getPrInfoByCheckRunNodeId(check_run.node_id as string, octokit);
+            },
+            { name: 'Get Pr info' }
+          );
+
           await runJob<T>(
             {
               organization: organization?.login as string,
               repo: repository.name,
-              prId: check_run.pull_requests[0].id,
-              prNumber: check_run.pull_requests[0].number,
+              prId: check_run.pull_requests[0].id || prDetails.fullDatabaseId,
+              prNumber: check_run.pull_requests[0].number || prDetails.number,
               checkRunId: check_run.id,
               senderId: contributor.id,
               senderLogin: contributor.login
@@ -78,7 +96,8 @@ export async function createEventJob<T extends IOWithIntegrations<{ github: Auto
 
 async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
   payload: EventSchema,
-  io: T
+  io: T,
+  queryPrInfo: boolean = false
 ) {
   const orgDetails = await io.github.runTask(
     'get org installation',
@@ -208,6 +227,36 @@ async function getPreviousComment<T extends Octokit>(
     hasNextPage = repository.pullRequest?.comments?.pageInfo?.hasNextPage ?? false;
   }
   return undefined;
+}
+
+async function getPrInfoByCheckRunNodeId<T extends Octokit>(check_run_node_id: string, octokit: T) {
+  const data = await octokit.graphql<{ node: CheckRun }>(
+    `
+      query($nodeId: String!) {
+        node(id: $nodeId) {
+          ...on CheckRun {
+            checkSuite {
+              commit {
+                associatePullRequests(first: 1) {
+                  nodes {
+                    ...on PullRequest {
+                      number
+                      id
+                      fullDatabaseId
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      `,
+    { nodeId: check_run_node_id }
+  );
+
+  const { commit } = data.node.checkSuite;
+  return ((commit?.associatedPullRequests as PullRequestConnection).nodes as PullRequest[])[0];
 }
 
 function headerComment(header: string): string {
