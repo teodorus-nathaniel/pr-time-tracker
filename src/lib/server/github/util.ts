@@ -109,12 +109,18 @@ const createCheckRunIfNotExists = async (
 ) => {
   const octokit = await app.getInstallationOctokit(org.installationId);
 
-  const { data } = await octokit.rest.checks.listForRef({
-    owner: org.name,
-    repo: repoName,
-    ref: headSha,
-    check_name: submissionCheckName(senderLogin)
-  });
+  const { data } = await octokit.rest.checks
+    .listForRef({
+      owner: org.name,
+      repo: repoName,
+      ref: headSha,
+      check_name: submissionCheckName(senderLogin)
+    })
+    .catch(() => ({
+      data: {
+        total_count: 0
+      }
+    }));
 
   if (data.total_count === 0) {
     await octokit.rest.checks.create({
@@ -140,12 +146,19 @@ const reRequestCheckRun = async (
     repo: repoName,
     pull_number: prNumber
   });
-  const { data } = await octokit.rest.checks.listForRef({
-    owner: org.name,
-    repo: repoName,
-    ref: prInfo.data.head.sha,
-    check_name: submissionCheckName(senderLogin)
-  });
+  const { data } = await octokit.rest.checks
+    .listForRef({
+      owner: org.name,
+      repo: repoName,
+      ref: prInfo.data.head.sha,
+      check_name: submissionCheckName(senderLogin)
+    })
+    .catch(() => ({
+      data: {
+        total_count: 0,
+        check_runs: []
+      }
+    }));
 
   if (data.total_count > 0) {
     return client.sendEvent({
