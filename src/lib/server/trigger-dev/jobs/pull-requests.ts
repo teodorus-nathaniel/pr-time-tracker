@@ -77,26 +77,21 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
           'create-check-runs',
           async () => {
             const list = await contributors.getManyBy({ id: { $in: prInfo.contributor_ids } });
-            const promises = [];
-
+            io.logger.info('check run for contributors', { list: list.map((l) => l.login) });
             for (const item of list) {
-              /* eslint-disable no-await-in-loop */
               io.logger.info('create check run for', {
                 login: item.login,
                 sha: pull_request.head.sha,
                 org: { name: organization?.login, installationId: orgDetails.id }
               });
-              promises.push(
-                createCheckRun(
-                  { name: organization?.login as string, installationId: orgDetails.id },
-                  repository.name,
-                  item.login,
-                  pull_request.head.sha
-                )
+              /* eslint-disable no-await-in-loop */
+              await createCheckRun(
+                { name: organization?.login as string, installationId: orgDetails.id },
+                repository.name,
+                item.login,
+                pull_request.head.sha
               );
             }
-
-            return Promise.all(promises);
           },
           { name: 'Create check runs' }
         );
@@ -126,25 +121,22 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
           );
 
           const list = await contributors.getManyBy({ id: { $in: prInfo.contributor_ids || [] } });
-          const promises = [];
+
+          io.logger.info('check run for contributors', { list: list.map((l) => l.login) });
           for (const item of list) {
-            /* eslint-disable no-await-in-loop */
             io.logger.info('create check run for', {
               login: item.login,
               sha: pull_request.head.sha,
               org: { name: organization?.login, installationId: orgDetails.id }
             });
-            promises.push(
-              createCheckRun(
-                { name: organization?.login as string, installationId: orgDetails.id },
-                repository.name,
-                item.login,
-                pull_request.head.sha
-              )
+            /* eslint-disable no-await-in-loop */
+            await createCheckRun(
+              { name: organization?.login as string, installationId: orgDetails.id },
+              repository.name,
+              item.login,
+              pull_request.head.sha
             );
           }
-
-          return Promise.all(promises);
         },
         { name: 'Create check runs' }
       );
