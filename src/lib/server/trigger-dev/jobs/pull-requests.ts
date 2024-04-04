@@ -79,14 +79,13 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         contributorList.forEach(async (c) => {
           await io.github.runTask(
             'create-check-run-for-contributor',
-            async () => {
-              return createCheckRun(
+            async () =>
+              createCheckRun(
                 { name: organization?.login as string, installationId: orgDetails.id },
                 repository.name,
                 c.login,
                 pull_request.head.sha
-              );
-            },
+              ),
             { name: `check run for ${c.login}` }
           );
         });
@@ -122,14 +121,13 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
       contributorList.forEach(async (c) => {
         await io.github.runTask(
           'create-check-run-for-contributor',
-          async () => {
-            return createCheckRun(
+          async () =>
+            createCheckRun(
               { name: organization?.login as string, installationId: orgDetails.id },
               repository.name,
               c.login,
               pull_request.head.sha
-            );
-          },
+            ),
           { name: `check run for ${c.login}` }
         );
       });
