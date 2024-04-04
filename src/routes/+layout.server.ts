@@ -20,7 +20,14 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) =
   let user: (User & Omit<ContributorSchema, '_id'> & { _id?: string }) | null = null;
 
   if (data.user) {
-    const { _id, ...contributor } = (await contributors.getOne({ id: data.user.id }))! || {};
+    const { _id, ...contributor } =
+      (await contributors.getOneOrCreate({
+        id: data.user.id,
+        login: data.user.login,
+        name: data.user.name,
+        url: data.user.url,
+        avatarUrl: data.user.avatar_url
+      }))! || {};
 
     user = { ...data.user, ...contributor, _id: _id?.toString() };
     if (dev) user.role = 'Manager' as any;

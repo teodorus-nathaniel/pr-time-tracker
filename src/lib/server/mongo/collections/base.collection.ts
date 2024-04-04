@@ -4,7 +4,8 @@ import {
   type Db,
   type Filter,
   type OptionalUnlessRequiredId,
-  MongoClient
+  MongoClient,
+  type InsertOneOptions
 } from 'mongodb';
 
 import type {
@@ -59,11 +60,14 @@ export abstract class BaseCollection<
       });
   }
 
-  async create(resource: OptionalUnlessRequiredId<CollectionType>) {
+  async create(
+    resource: OptionalUnlessRequiredId<CollectionType>,
+    options?: InsertOneOptions | undefined
+  ) {
     resource.created_at = resource.created_at || new Date().toISOString();
     resource.updated_at = resource.created_at;
 
-    const result = await this.context.insertOne(resource);
+    const result = await this.context.insertOne(resource, options);
 
     if (!result?.insertedId) {
       throw Error(`Could not create ${this.constructor.name.replace('sCollection', '')}.`);
@@ -78,6 +82,16 @@ export abstract class BaseCollection<
         ? { _id: new ObjectId(_idOrFilter) }
         : _idOrFilter) as Filter<CollectionType>
     );
+  }
+
+  async getOneOrCreate(options: any) {
+    return await this.context.findOne({ id: options.id } as Filter<CollectionType>).then((res) => {
+      if (!res) {
+        return this.create(options as OptionalUnlessRequiredId<CollectionType>, {
+          bypassDocumentValidation: true
+        });
+      }
+    });
   }
 
   async getMany(params?: GetManyParams<CollectionType>) {

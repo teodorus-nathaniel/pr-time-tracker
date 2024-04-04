@@ -30,12 +30,12 @@ export const GET: RequestHandler = async ({ url: { searchParams, pathname }, coo
 export const POST: RequestHandler = async ({ url, request, cookies }) => {
   try {
     let body: SubmissionSchema = {} as SubmissionSchema;
-    let contributor: string;
+    let contributor: any;
 
-    await verifyAuth(url, 'POST', cookies, async ({ rate, login, id }) => {
-      body = transform<SubmissionSchema>({ ...(await request.json()), rate })!;
-      contributor = login;
-      return body.owner_id === id;
+    await verifyAuth(url, 'POST', cookies, async (user) => {
+      body = transform<SubmissionSchema>({ ...(await request.json()), rate: user.rate })!;
+      contributor = user;
+      return body.owner_id === user.id;
     });
 
     // get pr item
@@ -49,7 +49,7 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
         organization: pr.org,
         owner: pr.owner,
         repository: pr.repo,
-        sender: contributor!,
+        sender: contributor.login!,
         title: pr.title,
         payload: body?.hours,
         created_at: Math.round(new Date().getTime() / 1000).toFixed(0),
@@ -62,8 +62,8 @@ export const POST: RequestHandler = async ({ url, request, cookies }) => {
       await reRequestCheckRun(
         { name: pr.org, installationId: installationInfo.data.id },
         pr.repo,
-        body!.owner_id,
-        contributor!,
+        contributor.id!,
+        contributor.login!,
         pr.number as number
       );
     }
