@@ -11,10 +11,10 @@ export const cookieNames = {
 
 export function serializeCookie(options?: CookieSerializeOptions): CookieSerializeOptions {
   return {
+    ...options,
     path: '/',
     httpOnly: false,
     sameSite: 'lax',
-    secure: !isDev,
-    ...options
+    secure: !isDev
   };
 }

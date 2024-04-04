@@ -26,9 +26,10 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) =
         login: data.user.login,
         name: data.user.name,
         url: data.user.url,
+        role: 'Contributor',
+        rate: 1,
         avatarUrl: data.user.avatar_url
       }))! || {};
-
     user = { ...data.user, ...contributor, _id: _id?.toString() };
     if (dev) user.role = 'Manager' as any;
     data.user = user;
