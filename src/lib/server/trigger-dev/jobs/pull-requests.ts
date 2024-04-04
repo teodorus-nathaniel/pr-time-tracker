@@ -73,28 +73,23 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
           { name: 'Get Organization installation' }
         );
 
-        await io.github.runTask(
-          'create-check-runs',
-          async () => {
-            const list = await contributors.getManyBy({ id: { $in: prInfo.contributor_ids } });
-            io.logger.info('check run for contributors', { list: list.map((l) => l.login) });
-            for (const item of list) {
-              io.logger.info('create check run for', {
-                login: item.login,
-                sha: pull_request.head.sha,
-                org: { name: organization?.login, installationId: orgDetails.id }
-              });
-              /* eslint-disable no-await-in-loop */
-              await createCheckRun(
+        const contributorList = await contributors.getManyBy({
+          id: { $in: prInfo.contributor_ids }
+        });
+        contributorList.forEach(async (c) => {
+          await io.github.runTask(
+            'create-check-run-for-contributor',
+            async () => {
+              return createCheckRun(
                 { name: organization?.login as string, installationId: orgDetails.id },
                 repository.name,
-                item.login,
+                c.login,
                 pull_request.head.sha
               );
-            }
-          },
-          { name: 'Create check runs' }
-        );
+            },
+            { name: `check run for ${c.login}` }
+          );
+        });
       }
       break;
     }
@@ -108,7 +103,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         { name: 'Get Organization installation' }
       );
 
-      await io.github.runTask(
+      const contributorList = await io.github.runTask(
         'create-check-runs',
         async () => {
           const contributor = await contributors.update(getContributorInfo(sender));
@@ -119,29 +114,25 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
             sender,
             contributor
           );
-
-          const list = await contributors.getManyBy({ id: { $in: prInfo.contributor_ids || [] } });
-
-          io.logger.info('check run for contributors', { list: list.map((l) => l.login) });
-
-          /* eslint-disable no-await-in-loop */
-          list.forEach(async (item) => {
-            io.logger.info('create check run for', {
-              login: item.login,
-              sha: pull_request.head.sha,
-              org: { name: organization?.login, installationId: orgDetails.id }
-            });
-            const result = await createCheckRun(
-              { name: organization?.login as string, installationId: orgDetails.id },
-              repository.name,
-              item.login,
-              pull_request.head.sha
-            );
-            io.logger.info('create check run result', result);
-          });
+          return contributors.getManyBy({ id: { $in: prInfo.contributor_ids || [] } });
         },
         { name: 'Create check runs' }
       );
+
+      contributorList.forEach(async (c) => {
+        await io.github.runTask(
+          'create-check-run-for-contributor',
+          async () => {
+            return createCheckRun(
+              { name: organization?.login as string, installationId: orgDetails.id },
+              repository.name,
+              c.login,
+              pull_request.head.sha
+            );
+          },
+          { name: `check run for ${c.login}` }
+        );
+      });
       break;
     }
     default: {
