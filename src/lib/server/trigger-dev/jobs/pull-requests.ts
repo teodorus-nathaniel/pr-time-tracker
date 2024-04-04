@@ -130,12 +130,13 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
               org: { name: organization?.login, installationId: orgDetails.id }
             });
             /* eslint-disable no-await-in-loop */
-            await createCheckRun(
+            const result = await createCheckRun(
               { name: organization?.login as string, installationId: orgDetails.id },
               repository.name,
               item.login,
               pull_request.head.sha
             );
+            io.logger.info('create check run result', result);
           }
         },
         { name: 'Create check runs' }
