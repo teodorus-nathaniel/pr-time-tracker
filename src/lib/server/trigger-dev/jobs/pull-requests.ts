@@ -123,13 +123,14 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
           const list = await contributors.getManyBy({ id: { $in: prInfo.contributor_ids || [] } });
 
           io.logger.info('check run for contributors', { list: list.map((l) => l.login) });
-          for (const item of list) {
+
+          /* eslint-disable no-await-in-loop */
+          list.forEach(async (item) => {
             io.logger.info('create check run for', {
               login: item.login,
               sha: pull_request.head.sha,
               org: { name: organization?.login, installationId: orgDetails.id }
             });
-            /* eslint-disable no-await-in-loop */
             const result = await createCheckRun(
               { name: organization?.login as string, installationId: orgDetails.id },
               repository.name,
@@ -137,7 +138,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
               pull_request.head.sha
             );
             io.logger.info('create check run result', result);
-          }
+          });
         },
         { name: 'Create check runs' }
       );
