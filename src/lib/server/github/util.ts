@@ -93,7 +93,7 @@ const createCheckRun = async (
 ) => {
   const octokit = await app.getInstallationOctokit(org.installationId);
 
-  await octokit.rest.checks.create({
+  return octokit.rest.checks.create({
     owner: org.name,
     repo: repoName,
     head_sha: headSha,
@@ -123,13 +123,14 @@ const createCheckRunIfNotExists = async (
     }));
 
   if (data.total_count === 0) {
-    await octokit.rest.checks.create({
+    return octokit.rest.checks.create({
       owner: org.name,
       repo: repoName,
       head_sha: headSha,
       name: submissionCheckName(senderLogin)
     });
   }
+  return Promise.resolve();
 };
 
 const reRequestCheckRun = async (
@@ -146,6 +147,7 @@ const reRequestCheckRun = async (
     repo: repoName,
     pull_number: prNumber
   });
+
   const { data } = await octokit.rest.checks
     .listForRef({
       owner: org.name,
@@ -174,6 +176,7 @@ const reRequestCheckRun = async (
       }
     });
   }
+  return Promise.resolve();
 };
 
 const github = new Autoinvoicing({
