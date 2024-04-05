@@ -85,27 +85,12 @@ const getInstallationId = async (orgName: string) => {
   });
 };
 
-const createCheckRun = async (
-  org: { name: string; installationId: number },
-  repoName: string,
-  senderLogin: string,
-  headSha: string
-) => {
-  const octokit = await app.getInstallationOctokit(org.installationId);
-
-  await octokit.rest.checks.create({
-    owner: org.name,
-    repo: repoName,
-    head_sha: headSha,
-    name: submissionCheckName(senderLogin)
-  });
-};
-
 const createCheckRunIfNotExists = async (
   org: { name: string; installationId: number },
   repoName: string,
   senderLogin: string,
-  headSha: string
+  senderId: number,
+  pull_request: PullRequest | SimplePullRequest
 ) => {
   const octokit = await app.getInstallationOctokit(org.installationId);
 
@@ -113,24 +98,39 @@ const createCheckRunIfNotExists = async (
     .listForRef({
       owner: org.name,
       repo: repoName,
-      ref: headSha,
+      ref: pull_request.head.sha,
       check_name: submissionCheckName(senderLogin)
     })
     .catch(() => ({
       data: {
-        total_count: 0
+        total_count: 0,
+        check_runs: []
       }
     }));
 
   if (data.total_count === 0) {
-    return octokit.rest.checks.create({
-      owner: org.name,
-      repo: repoName,
-      head_sha: headSha,
-      name: submissionCheckName(senderLogin)
+    return octokit.rest.checks
+      .create({
+        owner: org.name,
+        repo: repoName,
+        head_sha: pull_request.head.sha,
+        name: submissionCheckName(senderLogin)
+      })
+      .catch((err) => ({ error: err }));
+  } else {
+    return client.sendEvent({
+      name: `${org.name}_pr_submission.created`,
+      payload: {
+        organization: org.name,
+        repo: repoName,
+        prId: pull_request.id,
+        senderLogin: senderLogin,
+        senderId: senderId,
+        prNumber: pull_request.number,
+        checkRunId: data.check_runs[data.total_count - 1].id
+      }
     });
   }
-  return Promise.resolve();
 };
 
 const reRequestCheckRun = async (
@@ -193,7 +193,6 @@ export {
   getSubmissionStatus,
   submissionCheckPrefix,
   submissionCheckName,
-  createCheckRun,
   createCheckRunIfNotExists,
   getInstallationId
 };
