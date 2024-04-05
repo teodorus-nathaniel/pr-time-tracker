@@ -91,6 +91,7 @@ export abstract class BaseCollection<
           bypassDocumentValidation: true
         });
       }
+      return res;
     });
   }
 

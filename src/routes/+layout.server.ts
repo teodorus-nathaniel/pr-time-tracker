@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) =
   let user: (User & Omit<ContributorSchema, '_id'> & { _id?: string }) | null = null;
 
   if (data.user) {
-    const { _id, ...contributor } =
+    const contributor =
       (await contributors.getOneOrCreate({
         id: data.user.id,
         login: data.user.login,
@@ -30,7 +30,7 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) =
         rate: 1,
         avatarUrl: data.user.avatar_url
       }))! || {};
-    user = { ...data.user, ...contributor, _id: _id?.toString() };
+    user = { ...data.user, ...contributor, _id: contributor._id?.toString() };
     if (dev) user.role = 'Manager' as any;
     data.user = user;
     cookies.set(cookieNames.contributorId, user.id.toString(), serializeCookie());
