@@ -19,7 +19,7 @@ export const load: LayoutServerLoad = async ({ fetch, depends, url, cookies }) =
   );
   let user: (User & Omit<ContributorSchema, '_id'> & { _id?: string }) | null = null;
 
-  if (data.user) {
+  if (data && data.user && data.user.id) {
     const contributor =
       (await contributors.getOneOrCreate({
         id: data.user.id,
