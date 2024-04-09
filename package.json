@@ -18,9 +18,9 @@
   "dependencies": {
     "@google-cloud/bigquery": "^7.3.0",
     "@holdex/autoinvoicing": "0.0.7",
-    "@octokit/graphql-schema": "^14.56.0",
-    "@octokit/oauth-methods": "^4.0.0",
-    "@octokit/webhooks-types": "^7.1.0",
+    "@octokit/graphql-schema": "^15.5.0",
+    "@octokit/oauth-methods": "^4.1.0",
+    "@octokit/webhooks-types": "^7.5.0",
     "@prettier/plugin-pug": "^3.0.0",
     "@steeze-ui/heroicons": "^2.2.3",
     "@trigger.dev/sdk": "^2.3.18",
@@ -30,7 +30,7 @@
     "cookie": "^0.5.0",
     "fs-extra": "^11.1.1",
     "mongodb": "^5.7.0",
-    "octokit": "^3.1.2",
+    "octokit": "^3.2.0",
     "status-code-enum": "^1.0.0",
     "universal-cookie": "^4.0.4",
     "zod": "^3.22.4"
