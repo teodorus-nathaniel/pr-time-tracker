@@ -126,7 +126,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
     async () => {
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
-      const body = {
+      return octokit.request('PATCH /repos/{owner}/{repo}/check-runs/{check_run_id}', {
         owner: payload.organization,
         repo: payload.repo,
         check_run_id: payload.checkRunId,
@@ -141,8 +141,8 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
             ? `Pull request cost submitted. No actions required.`
             : `Submit cost by following the [link](https://pr-time-tracker.vercel.app).`
         }
-      } as any;
-      return octokit.rest.checks.update(body);
+      });
+      // return octokit.rest.checks.update(body);
     },
     { name: 'Update check run' }
   );
