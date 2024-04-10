@@ -7,7 +7,10 @@ import type {
   IssueComment,
   CheckRun,
   PullRequestConnection,
-  PullRequest
+  PullRequest,
+  UpdateCheckRunPayload,
+  UpdateCheckRunInput,
+  CheckConclusionState
 } from '@octokit/graphql-schema';
 
 import type { CheckRunEvent } from '$lib/server/github';
@@ -121,18 +124,27 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
     { name: 'Get Submission' }
   );
 
+  const repoDetails = await io.github.runTask(
+    'get-repo-id',
+    async () => {
+      const octokit = await app.getInstallationOctokit(orgDetails.id);
+
+      return octokit.rest.repos.get({ owner: payload.organization, repo: payload.repo });
+    },
+    { name: 'Get Repo Details' }
+  );
+
   const result = await io.github.runTask(
     'update-check-run',
     async () => {
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
-      const body = {
-        owner: payload.organization,
-        repo: payload.repo,
-        check_run_id: payload.checkRunId,
-        status: 'completed',
-        conclusion: submission ? 'success' : 'failure',
-        completed_at: new Date().toISOString(),
+      return updateCheckRun(octokit, {
+        repositoryId: `${repoDetails.data.id}`,
+        checkRunId: `${payload.checkRunId}`,
+        status: 'completed' as any,
+        conclusion: submission ? 'success' : ('failure' as any),
+        completedAt: new Date().toISOString(),
         output: {
           title: submission
             ? `✅ cost submitted: ${submission.hours} hours.`
@@ -141,16 +153,11 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
             ? `Pull request cost submitted. No actions required.`
             : `Submit cost by following the [link](https://pr-time-tracker.vercel.app).`
         }
-      } as any;
-      return octokit.rest.checks.update({
-        ...body,
-        headers: { 'Content-length': JSON.stringify(body).length }
       });
     },
     { name: 'Update check run' }
   );
-
-  if (result.data.conclusion === 'success') {
+  if (result.checkRun?.conclusion === 'SUCCESS') {
     await io.github.runTask('add-submission-comment', async () => {
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
@@ -176,7 +183,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
         repo: payload.repo,
         body: bodyWithHeader(
           `Hi  @${payload.senderLogin}
-          Your PR ${result.data.output.title?.slice(2) as string}
+          Your PR ${result.checkRun?.title?.slice(2) as string}
           View submission [on](https://pr-time-tracker.vercel.app/contributors/${payload.senderId}).
         `,
           payload.senderId.toString()
@@ -273,6 +280,25 @@ async function getPrInfoByCheckRunNodeId<T extends Octokit>(check_run_node_id: s
 
   const { commit } = data.node.checkSuite;
   return ((commit?.associatedPullRequests as PullRequestConnection).nodes as PullRequest[])[0];
+}
+
+async function updateCheckRun<T extends Octokit>(octokit: T, input: UpdateCheckRunInput) {
+  return octokit.graphql<UpdateCheckRunPayload>(
+    `
+      mutation($input: UpdateCheckRunInput!) {
+        updateCheckRun(input: $input) {
+          checkRun {
+            id
+            conclusion
+            title
+            summary
+          }
+          clientMutationId
+        }
+      }
+      `,
+    { input }
+  );
 }
 
 function headerComment(header: string): string {
