@@ -133,14 +133,28 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
     { name: 'Get Repo Details' }
   );
 
+  const checkDetails = await io.github.runTask(
+    'get-check-id',
+    async () => {
+      const octokit = await app.getInstallationOctokit(orgDetails.id);
+
+      return octokit.rest.checks.get({
+        owner: payload.organization,
+        repo: payload.repo,
+        check_run_id: payload.checkRunId
+      });
+    },
+    { name: 'Get Check Details' }
+  );
+
   const result = await io.github.runTask(
     'update-check-run',
     async () => {
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
       return updateCheckRun(octokit, {
-        repositoryId: `${repoDetails.data.id}`,
-        checkRunId: `${payload.checkRunId}`,
+        repositoryId: repoDetails.data.node_id,
+        checkRunId: checkDetails.data.node_id,
         status: 'COMPLETED',
         conclusion: submission ? 'SUCCESS' : 'FAILURE',
         completedAt: new Date().toISOString(),
