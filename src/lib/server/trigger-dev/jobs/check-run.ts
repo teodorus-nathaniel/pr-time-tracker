@@ -166,7 +166,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
             ? `Pull request cost submitted. No actions required.`
             : `Submit cost by following the [link](https://pr-time-tracker.vercel.app).`
         }
-      });
+      }).then((r) => r.updateCheckRun);
     },
     { name: 'Update check run' }
   );
@@ -296,7 +296,7 @@ async function getPrInfoByCheckRunNodeId<T extends Octokit>(check_run_node_id: s
 }
 
 async function updateCheckRun<T extends Octokit>(octokit: T, input: UpdateCheckRunInput) {
-  return octokit.graphql<UpdateCheckRunPayload>(
+  return octokit.graphql<{ updateCheckRun: UpdateCheckRunPayload }>(
     `
       mutation($input: UpdateCheckRunInput!) {
         updateCheckRun(input: $input) {
