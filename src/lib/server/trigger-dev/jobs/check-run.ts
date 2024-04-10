@@ -181,6 +181,8 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
         octokit
       );
 
+      await io.logger.info('previous comment', { previous });
+
       if (previous) {
         // let's check if the comment is not already available
         await octokit.rest.issues.deleteComment({
