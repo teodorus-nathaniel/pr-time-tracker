@@ -9,8 +9,7 @@ import type {
   PullRequestConnection,
   PullRequest,
   UpdateCheckRunPayload,
-  UpdateCheckRunInput,
-  CheckConclusionState
+  UpdateCheckRunInput
 } from '@octokit/graphql-schema';
 
 import type { CheckRunEvent } from '$lib/server/github';
@@ -142,8 +141,8 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
       return updateCheckRun(octokit, {
         repositoryId: `${repoDetails.data.id}`,
         checkRunId: `${payload.checkRunId}`,
-        status: 'completed' as any,
-        conclusion: submission ? 'success' : ('failure' as any),
+        status: 'COMPLETED',
+        conclusion: submission ? 'SUCCESS' : 'FAILURE',
         completedAt: new Date().toISOString(),
         output: {
           title: submission
