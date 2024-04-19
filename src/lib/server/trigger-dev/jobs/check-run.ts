@@ -173,7 +173,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
     { name: 'Update check run' }
   );
   if (result.checkRun?.conclusion === 'SUCCESS') {
-    await io.github.runTask('add-submission-comment', async () => {
+    const previous = await io.github.runTask('get previous comment', async () => {
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
       const previous = await getPreviousComment<typeof octokit>(
@@ -182,17 +182,24 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
         payload.senderId.toString(),
         octokit
       );
+      return previous;
+    });
 
-      await io.logger.info('previous comment', { previous });
+    if (previous) {
+      await io.github.runTask('delete previous comment', async () => {
+        const octokit = await app.getInstallationOctokit(orgDetails.id);
 
-      if (previous) {
         // let's check if the comment is not already available
         await octokit.rest.issues.deleteComment({
           owner: payload.organization,
           repo: payload.repo,
           comment_id: previous?.databaseId as number
         });
-      }
+      });
+    }
+
+    await io.github.runTask('add-submission-comment', async () => {
+      const octokit = await app.getInstallationOctokit(orgDetails.id);
 
       // let's check if the comment is not already available
       return octokit.rest.issues.createComment({
