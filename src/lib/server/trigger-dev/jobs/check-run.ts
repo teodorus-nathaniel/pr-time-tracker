@@ -141,7 +141,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
 
       return octokit.rest.checks.get({
         owner: payload.organization,
-        repo: payload.repo,
+        repo: repoDetails.data.name,
         check_run_id: payload.checkRunId
       });
     },
@@ -159,14 +159,14 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
         status: 'COMPLETED',
         conclusion: submission ? 'SUCCESS' : 'FAILURE',
         completedAt: new Date().toISOString(),
-        detailsUrl: `https://pr-time-tracker.vercel.app/prs/${payload.organization}/${payload.repo}/${payload.prId}`,
+        detailsUrl: `https://pr-time-tracker.vercel.app/prs/${payload.organization}/${repoDetails.data.name}/${payload.prId}`,
         output: {
           title: submission
             ? `✅ cost submitted: ${submission.hours} hours.`
             : '❌ cost submission missing',
           summary: submission
             ? `Pull request cost submitted. No actions required.`
-            : `Submit cost by following the [link](https://pr-time-tracker.vercel.app/prs/${payload.organization}/${payload.repo}/${payload.prId}).`
+            : `Submit cost by following the [link](https://pr-time-tracker.vercel.app/prs/${payload.organization}/${repoDetails.data.name}/${payload.prId}).`
         }
       }).then((r) => r.updateCheckRun);
     },
@@ -177,7 +177,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
       const previous = await getPreviousComment<typeof octokit>(
-        { owner: payload.organization, repo: payload.repo },
+        { owner: payload.organization, repo: repoDetails.data.name },
         payload.prNumber,
         payload.senderId.toString(),
         octokit
@@ -192,7 +192,7 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
         // let's check if the comment is not already available
         await octokit.rest.issues.deleteComment({
           owner: payload.organization,
-          repo: payload.repo,
+          repo: repoDetails.data.name,
           comment_id: previous?.databaseId as number
         });
       });
@@ -202,20 +202,21 @@ async function runJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
       const octokit = await app.getInstallationOctokit(orgDetails.id);
 
       // let's check if the comment is not already available
-      return octokit.rest.issues.createComment({
+      const comment = await octokit.rest.issues.createComment({
         owner: payload.organization,
-        repo: payload.repo,
+        repo: repoDetails.data.name,
         body: bodyWithHeader(
           `Hi  @${payload.senderLogin}
           Your PR ${result.checkRun?.title?.slice(2) as string}
           View submission [on](https://pr-time-tracker.vercel.app/prs/${payload.organization}/${
-            payload.repo
+            repoDetails.data.name
           }/${payload.prId}).
         `,
           payload.senderId.toString()
         ),
         issue_number: payload.prNumber
       });
+      return Promise.resolve(comment);
     });
   }
 }
