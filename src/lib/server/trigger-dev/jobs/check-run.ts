@@ -319,8 +319,7 @@ async function getPrInfoByCheckRunNodeId<T extends Octokit>(
             checkSuite {
               commit {
                 id
-                
-                associatedPullRequests {
+                associatedPullRequests(first: 1) {
                   nodes {
                     number
                     fullDatabaseId
