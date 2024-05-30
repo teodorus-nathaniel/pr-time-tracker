@@ -406,6 +406,6 @@ function bindMembers(previousCommentBody: string, member: string, submissionCrea
       list = list?.filter((f) => f !== `@${member}`);
     }
 
-    return list;
+    return [...new Set(list)];
   }
 }
