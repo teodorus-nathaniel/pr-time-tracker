@@ -139,7 +139,8 @@ const createCheckRunIfNotExists = async (
         owner: org.name,
         repo: repoName,
         head_sha: pull_request.head.sha,
-        name: submissionCheckName(senderLogin)
+        name: submissionCheckName(senderLogin),
+        details_url: `https://pr-time-tracker.vercel.app/prs/${org.name}/${repoName}/${pull_request.id}`
       })
       .catch((err) => ({ error: err }));
   } else {

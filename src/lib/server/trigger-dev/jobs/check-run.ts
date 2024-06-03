@@ -389,7 +389,7 @@ async function getPrInfoByCheckRunNodeId<T extends Octokit>(
           (p) => Number(p?.fullDatabaseId) === Number(parsedDBId)
         );
         if (found) {
-          return { id: found.id, number: found?.number, fullDatabaseId: found.fullDatabaseId };
+          return { id: found?.id, number: found?.number, fullDatabaseId: found?.fullDatabaseId };
         }
       } else {
         throw new Error('failed to get pull request');
