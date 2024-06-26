@@ -1,6 +1,6 @@
 import type { TriggerContext, IOWithIntegrations } from '@trigger.dev/sdk';
 import type { Autoinvoicing } from '@holdex/autoinvoicing';
-import type { IssuesEvent } from '@octokit/webhooks-types';
+import type { IssuesLabeledEvent } from '@octokit/webhooks-types';
 import type {
   AddProjectV2ItemByIdInput,
   AddProjectV2ItemByIdPayload,
@@ -9,7 +9,7 @@ import type {
 } from '@octokit/graphql-schema';
 
 export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
-  payload: IssuesEvent,
+  payload: IssuesLabeledEvent,
   io: T,
   ctx: TriggerContext,
   org: { nodeId: string; name: string }

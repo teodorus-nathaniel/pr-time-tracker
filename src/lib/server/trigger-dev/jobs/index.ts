@@ -18,7 +18,7 @@ config.integrationsList.forEach((org) => {
     name: 'Streaming issue labeling for Github using app',
     version: '0.0.1',
     trigger: github.triggers.org({
-      event: events.onIssue,
+      event: events.onIssueLabel,
       org: org.name
     }),
     integrations: { github },
