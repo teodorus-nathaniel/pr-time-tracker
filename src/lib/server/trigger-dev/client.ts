@@ -6,7 +6,7 @@ import { API } from '@discordjs/core';
 import config from '../config';
 
 const client = new TriggerClient({
-  id: 'autoinvoicing-hCPJ',
+  id: config.triggerDev.projectId,
   apiKey: config.triggerDev.apiKey,
   apiUrl: config.triggerDev.apiUrl
 });

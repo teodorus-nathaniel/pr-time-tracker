@@ -8,6 +8,7 @@
     "dev": "pnpm pre-dev && vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
+    "trigger-dev:run": "npx @trigger.dev/cli@latest dev --port 5173",
     "format": "npx prettier . --write --ignore-path .gitignore --plugin prettier-plugin-svelte --plugin @prettier/plugin-pug",
     "lint": "npx eslint --ext js,ts,cjs,svelte --ignore-path .eslintignore > eslint-debug.log --fix .",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -81,6 +82,6 @@
     ]
   },
   "trigger.dev": {
-    "endpointId": "autoinvoicing-hCPJ"
+    "endpointId": "autoinvoicing-test-Gm1o"
   }
 }
