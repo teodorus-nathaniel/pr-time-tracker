@@ -5,15 +5,18 @@ import type {
   PullRequest,
   SimplePullRequest,
   Organization,
-  Repository
+  Repository,
+  PullRequestEvent,
+  PullRequestReviewEvent
 } from '@octokit/webhooks-types';
 import type { ContributorSchema, ItemSchema } from '$lib/@types';
+import type { IOWithIntegrations } from '@trigger.dev/sdk';
 
 import config from '$lib/server/config';
 import { ItemType } from '$lib/constants';
 import { items, submissions } from '$lib/server/mongo/collections';
 
-import { client } from './client';
+import { client, type Autoinvoicing } from './client';
 
 const githubApp = new App({
   appId: config.github.appId,
@@ -40,7 +43,9 @@ const getContributorInfo = (user: User): Omit<ContributorSchema, 'role' | 'rate'
 });
 
 const submissionCheckPrefix = 'Cost Submission';
+const bugCheckPrefix = 'Bug Report Info';
 const submissionCheckName = (login: string) => `${submissionCheckPrefix} (${login})`;
+const bugCheckName = (login: string) => `${bugCheckPrefix} (${login})`;
 
 const getPrInfo = async (
   pr: PullRequest | SimplePullRequest,
@@ -111,20 +116,20 @@ const getInstallationId = async (orgName: string) => {
 };
 
 const createCheckRunIfNotExists = async (
-  org: { name: string; installationId: number },
-  repoName: string,
-  senderLogin: string,
-  senderId: number,
-  pull_request: PullRequest | SimplePullRequest
+  org: { name: string; installationId: number; repo: string },
+  sender: { login: string; id: number },
+  pull_request: PullRequest | SimplePullRequest,
+  checkName: (s: string) => string,
+  runType: string
 ) => {
   const octokit = await githubApp.getInstallationOctokit(org.installationId);
 
   const { data } = await octokit.rest.checks
     .listForRef({
       owner: org.name,
-      repo: repoName,
+      repo: org.repo,
       ref: pull_request.head.sha,
-      check_name: submissionCheckName(senderLogin)
+      check_name: checkName(sender.login)
     })
     .catch(() => ({
       data: {
@@ -137,21 +142,22 @@ const createCheckRunIfNotExists = async (
     return octokit.rest.checks
       .create({
         owner: org.name,
-        repo: repoName,
+        repo: org.repo,
         head_sha: pull_request.head.sha,
-        name: submissionCheckName(senderLogin),
-        details_url: `https://pr-time-tracker.vercel.app/prs/${org.name}/${repoName}/${pull_request.id}`
+        name: checkName(sender.login),
+        details_url: `https://pr-time-tracker.vercel.app/prs/${org.name}/${org.repo}/${pull_request.id}`
       })
       .catch((err) => ({ error: err }));
   } else {
     return client.sendEvent({
-      name: `${org.name}_pr_submission.created`,
+      name: `${org.name}_custom_event`,
       payload: {
+        type: runType,
         organization: org.name,
-        repo: repoName,
+        repo: org.repo,
         prId: pull_request.id,
-        senderLogin: senderLogin,
-        senderId: senderId,
+        senderLogin: sender.login,
+        senderId: sender.id,
         prNumber: pull_request.number,
         checkRunId: data.check_runs[data.total_count - 1].id
       }
@@ -190,8 +196,9 @@ const reRequestCheckRun = async (
 
   if (data.total_count > 0) {
     return client.sendEvent({
-      name: `${org.name}_pr_submission.created`,
+      name: `${org.name}_custom_event`,
       payload: {
+        type: 'submission',
         organization: org.name,
         repo: repoName,
         prId: prInfo.data.id,
@@ -225,8 +232,50 @@ const checkRunFromEvent = async (
   );
 };
 
+async function runPrFixCheckRun<
+  T extends IOWithIntegrations<{ github: Autoinvoicing }>,
+  E extends PullRequestEvent | PullRequestReviewEvent = PullRequestEvent | PullRequestReviewEvent
+>(payload: E, io: T) {
+  const { pull_request, repository, organization } = payload;
+
+  const { title, user } = pull_request;
+  if (/^fix:/.test(title)) {
+    return io.logger.log('identified pull request');
+
+    const orgDetails = await io.runTask(
+      'get org installation',
+      async () => {
+        const { data } = await getInstallationId(organization?.login as string);
+        return data;
+      },
+      { name: 'Get Organization installation' }
+    );
+
+    await io.runTask(
+      `create-check-run-for-fix-pr`,
+      async () => {
+        const result = await createCheckRunIfNotExists(
+          {
+            name: organization?.login as string,
+            installationId: orgDetails.id,
+            repo: repository.name
+          },
+          user,
+          pull_request,
+          (b) => bugCheckName(b),
+          'bug_report'
+        );
+        await io.logger.info(`check result`, { result });
+        return Promise.resolve();
+      },
+      { name: `check run for fix PR` }
+    );
+  }
+}
+
 export {
   githubApp,
+  runPrFixCheckRun,
   excludedAccounts,
   reRequestCheckRun,
   getInstallationId,
@@ -235,6 +284,8 @@ export {
   checkRunFromEvent,
   getPrInfo,
   getSubmissionStatus,
+  bugCheckName,
   submissionCheckName,
+  bugCheckPrefix,
   submissionCheckPrefix
 };

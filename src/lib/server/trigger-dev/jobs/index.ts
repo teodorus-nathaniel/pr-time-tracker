@@ -59,8 +59,9 @@ config.integrationsList.forEach((org) => {
     name: 'Streaming custom events for Github using app',
     version: '0.0.1',
     trigger: eventTrigger({
-      name: `${org.name}_pr_submission.created`,
+      name: `${org.name}_custom_event`,
       schema: zod.object({
+        type: zod.string(),
         organization: zod.string(),
         repo: zod.string(),
         prId: zod.number(),
