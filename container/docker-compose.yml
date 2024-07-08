@@ -1,0 +1,12 @@
+---
+version: '3.8'
+
+services:
+  triggerdotdev:
+    image: ghcr.io/triggerdotdev/trigger.dev:main
+    container_name: triggerdotdev
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - 3030:3030
