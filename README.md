@@ -45,7 +45,7 @@ PR Time Tracker automates invoice generation processes and tracks core developer
 
 ```
 TRIGGER_API_KEY="api_key"
-TRIGGER_API_URL="api_url"
+TRIGGER_API_URL="same as LOGIN_ORIGIN"
 TRIGGER_PROJECT_ID="project_id"
 ```
 
