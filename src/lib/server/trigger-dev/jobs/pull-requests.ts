@@ -202,7 +202,7 @@ async function updatePrInfo<
   }
 
   const contributor = await io.runTask<any>(
-    `update contributor: ${contributorInfo._id}`,
+    `update contributor: ${contributorInfo.id}`,
     async () => {
       const data = await contributors.update(contributorInfo);
       return data;
