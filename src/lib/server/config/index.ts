@@ -6,6 +6,7 @@ import {
   GITHUB_CLIENT_SECRET,
   GITHUB_TOKEN,
   TRIGGER_API_KEY,
+  TRIGGER_PROJECT_ID,
   DISCORD_BOT_TOKEN,
   DISCORD_CHANNEL_ID,
   TRIGGER_API_URL,
@@ -39,6 +40,7 @@ type Config = {
     privateKey: string;
   };
   triggerDev: {
+    projectId: string;
     apiKey: string;
     apiUrl: string;
   };
@@ -67,6 +69,7 @@ const config: Config = {
     privateKey: GCLOUD_PRIVATE_KEY.replace(/\\n/g, '\n')
   },
   triggerDev: {
+    projectId: TRIGGER_PROJECT_ID,
     apiKey: TRIGGER_API_KEY,
     apiUrl: TRIGGER_API_URL
   },

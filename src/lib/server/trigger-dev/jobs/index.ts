@@ -92,31 +92,33 @@ config.integrationsList.forEach((org) => {
   });
 });
 
-client.defineJob({
-  id: `discord-send-message${isDev ? '_dev' : ''}`,
-  name: 'Send Discord message',
-  version: '0.0.1',
-  trigger: eventTrigger({
-    name: 'discord-send-message',
-    schema: zod.object({
-      content: zod.string()
-    })
-  }),
-  run: async (payload, io) => {
-    const { content } = payload;
+if (!isDev) {
+  client.defineJob({
+    id: `discord-send-message`,
+    name: 'Send Discord message',
+    version: '0.0.1',
+    trigger: eventTrigger({
+      name: 'discord-send-message',
+      schema: zod.object({
+        content: zod.string()
+      })
+    }),
+    run: async (payload, io) => {
+      const { content } = payload;
 
-    await io.runTask('Discord send message', async () => {
-      const channelsAPI = discordApi.channels;
-      await channelsAPI.createMessage(config.discord.channelId, { content });
-    });
-  }
-});
-
-client.on('runFailed', (notification) => {
-  client.sendEvent({
-    name: 'discord-send-message',
-    payload: {
-      content: `${notification.job.id} failed to run. More info on https://cloud.trigger.dev/orgs/${notification.organization.slug}/projects/${notification.project.slug}/jobs/${notification.job.id}/runs/${notification.id}/trigger`
+      await io.runTask('Discord send message', async () => {
+        const channelsAPI = discordApi.channels;
+        await channelsAPI.createMessage(config.discord.channelId, { content });
+      });
     }
   });
-});
+
+  client.on('runFailed', (notification) => {
+    client.sendEvent({
+      name: 'discord-send-message',
+      payload: {
+        content: `${notification.job.id} failed to run. More info on https://cloud.trigger.dev/orgs/${notification.organization.slug}/projects/${notification.project.slug}/jobs/${notification.job.id}/runs/${notification.id}/trigger`
+      }
+    });
+  });
+}
