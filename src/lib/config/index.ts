@@ -1,4 +1,4 @@
-import { PUB_GITHUB_CLIENT_ID } from '$env/static/public';
+import { PUB_GITHUB_CLIENT_ID, PUB_SUBMISSION_DURATION } from '$env/static/public';
 import { dev } from '$app/environment';
 
 type Config = {
@@ -8,6 +8,7 @@ type Config = {
     clientId: string;
     authorizeRedirectUrl: string;
   };
+  submissionDuration: string;
 };
 
 const config: Config = {
@@ -18,7 +19,8 @@ const config: Config = {
     authorizeRedirectUrl: dev
       ? `https://alert-seemingly-moccasin.ngrok-free.app/api/github/auth/authorize`
       : ''
-  }
+  },
+  submissionDuration: PUB_SUBMISSION_DURATION
 };
 
 export const invalidations = {
@@ -54,4 +56,5 @@ export const responseHeadersInit = {
 };
 
 export const isDev = dev;
+
 export default config;
