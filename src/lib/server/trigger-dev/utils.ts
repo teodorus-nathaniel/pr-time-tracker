@@ -1,4 +1,4 @@
-import { App } from 'octokit';
+import { App, Octokit } from 'octokit';
 
 import type {
   User,
@@ -9,6 +9,7 @@ import type {
   PullRequestEvent,
   PullRequestReviewEvent
 } from '@octokit/webhooks-types';
+import type { User as UserGQL, Repository as RepoGQL, IssueComment } from '@octokit/graphql-schema';
 import type { ContributorSchema, ItemSchema } from '$lib/@types';
 import type { IOWithIntegrations } from '@trigger.dev/sdk';
 
@@ -273,6 +274,142 @@ async function runPrFixCheckRun<
   }
 }
 
+async function deleteComment(
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  previousComment: any,
+  io: any
+): Promise<void> {
+  try {
+    await io.runTask('delete-comment', async () => {
+      const octokit = await githubApp.getInstallationOctokit(orgID);
+      if (previousComment?.databaseId) {
+        await octokit.rest.issues.deleteComment({
+          owner: orgName,
+          repo: repositoryName,
+          comment_id: previousComment.databaseId
+        });
+      }
+    });
+  } catch (error) {
+    await io.logger.error('delete comment', { error });
+  }
+}
+
+function submissionHeaderComment(header: string): string {
+  return `<!-- Sticky Issue Comment${header} -->`;
+}
+
+function bodyWithHeader(body: string, header: string): string {
+  return `${body}\n${submissionHeaderComment(header)}`;
+}
+
+const queryPreviousComment = async <T extends Octokit>(
+  repo: { owner: string; repo: string },
+  prNumber: number,
+  h: string,
+  octokit: T
+) => {
+  let after = null;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    /* eslint-disable no-await-in-loop */
+    const data = await octokit.graphql<{ repository: RepoGQL; viewer: UserGQL }>(
+      `
+      query($repo: String! $owner: String! $number: Int! $after: String) {
+        viewer { login }
+        repository(name: $repo owner: $owner) {
+          pullRequest(number: $number) {
+            comments(first: 100 after: $after) {
+              nodes {
+                id
+                databaseId
+                author {
+                  login
+                }
+                isMinimized
+                body
+              }
+              pageInfo {
+                endCursor
+                hasNextPage
+              }
+            }
+          }
+        }
+      }
+      `,
+      { ...repo, after, number: prNumber }
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const viewer = data.viewer as UserGQL;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const repository = data.repository as RepoGQL;
+    const target = repository.pullRequest?.comments?.nodes?.find(
+      (node: IssueComment | null | undefined) =>
+        node?.author?.login === viewer.login.replace('[bot]', '') &&
+        !node?.isMinimized &&
+        node?.body?.includes(h)
+    );
+    if (target) {
+      return target;
+    }
+    after = repository.pullRequest?.comments?.pageInfo?.endCursor;
+    hasNextPage = repository.pullRequest?.comments?.pageInfo?.hasNextPage ?? false;
+  }
+  return undefined;
+};
+
+async function getPreviousComment(
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  header: string,
+  issueNumber: number,
+  io: any
+): Promise<IssueComment | undefined> {
+  const previousComment = await io.runTask('get-previous-comment', async () => {
+    try {
+      const octokit = await githubApp.getInstallationOctokit(orgID);
+      const previous = await queryPreviousComment<typeof octokit>(
+        { owner: orgName, repo: repositoryName },
+        issueNumber,
+        header,
+        octokit
+      );
+      return previous;
+    } catch (error) {
+      await io.logger.error('get previous comment', { error });
+      return undefined;
+    }
+  });
+
+  return previousComment;
+}
+
+async function createComment(
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  comment: string,
+  issueNumber: number,
+  io: any
+): Promise<void> {
+  try {
+    const octokit = await githubApp.getInstallationOctokit(orgID);
+    await octokit.rest.issues.createComment({
+      owner: orgName,
+      repo: repositoryName,
+      body: comment,
+      issue_number: issueNumber
+    });
+  } catch (error) {
+    await io.logger.error('add issue comment', { error });
+  }
+}
+
 export {
   githubApp,
   runPrFixCheckRun,
@@ -287,5 +424,10 @@ export {
   bugCheckName,
   submissionCheckName,
   bugCheckPrefix,
-  submissionCheckPrefix
+  submissionCheckPrefix,
+  getPreviousComment,
+  deleteComment,
+  createComment,
+  bodyWithHeader,
+  submissionHeaderComment
 };
