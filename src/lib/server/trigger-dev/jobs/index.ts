@@ -22,6 +22,7 @@ config.integrationsList.forEach((org) => {
       event: events.onIssue,
       org: org.name
     }),
+    enabled: false,
     integrations: { github },
     run: async (payload, io, ctx) =>
       createIssueCreationJob<IOWithIntegrations<{ github: Autoinvoicing }>>(payload, io, ctx, org)
