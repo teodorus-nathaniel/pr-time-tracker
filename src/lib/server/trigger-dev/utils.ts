@@ -307,7 +307,8 @@ function bodyWithHeader(body: string, header: string): string {
 
 const queryPreviousComment = async <T extends Octokit>(
   repo: { owner: string; repo: string },
-  prNumber: number,
+  idNumber: number,
+  category: string,
   h: string,
   octokit: T
 ) => {
@@ -320,8 +321,9 @@ const queryPreviousComment = async <T extends Octokit>(
       `
       query($repo: String! $owner: String! $number: Int! $after: String) {
         viewer { login }
-        repository(name: $repo owner: $owner) {
-          pullRequest(number: $number) {
+        repository(name: $repo owner: $owner) { ` +
+        category +
+        `(number: $number) {
             comments(first: 100 after: $after) {
               nodes {
                 id
@@ -341,13 +343,14 @@ const queryPreviousComment = async <T extends Octokit>(
         }
       }
       `,
-      { ...repo, after, number: prNumber }
+      { ...repo, after, number: idNumber }
     );
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const viewer = data.viewer as UserGQL;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const repository = data.repository as RepoGQL;
-    const target = repository.pullRequest?.comments?.nodes?.find(
+    const categoryObj = category === 'issue' ? repository.issue : repository.pullRequest;
+    const target = categoryObj?.comments?.nodes?.find(
       (node: IssueComment | null | undefined) =>
         node?.author?.login === viewer.login.replace('[bot]', '') &&
         !node?.isMinimized &&
@@ -356,9 +359,10 @@ const queryPreviousComment = async <T extends Octokit>(
     if (target) {
       return target;
     }
-    after = repository.pullRequest?.comments?.pageInfo?.endCursor;
-    hasNextPage = repository.pullRequest?.comments?.pageInfo?.hasNextPage ?? false;
+    after = categoryObj?.comments?.pageInfo?.endCursor;
+    hasNextPage = categoryObj?.comments?.pageInfo?.hasNextPage ?? false;
   }
+
   return undefined;
 };
 
@@ -368,6 +372,7 @@ async function getPreviousComment(
   repositoryName: string,
   header: string,
   issueNumber: number,
+  category: string,
   io: any
 ): Promise<IssueComment | undefined> {
   const previousComment = await io.runTask('get-previous-comment', async () => {
@@ -376,6 +381,7 @@ async function getPreviousComment(
       const previous = await queryPreviousComment<typeof octokit>(
         { owner: orgName, repo: repositoryName },
         issueNumber,
+        category,
         header,
         octokit
       );
