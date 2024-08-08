@@ -1,13 +1,16 @@
 # PR Time Tracker
 
-PR Time Tracker automates invoice generation processes and tracks core developer activity related to PRs.
+PR Time Tracker automates invoice generation processes and tracks core developer activity related to PRs and issues.
+
+## Contributing
+If you want to contribute, please follow Holdex [Developer Guidelines](https://github.com/holdex/developers).
 
 ## Installing application
 
 1. Access the App [public page](https://github.com/apps/pr-time-tracker)
 2. Install the App under your organization
 3. Invite the @pr-time-tracker into your organization and make him an owner
-4. To customize the included repositories go to "Settings" -> "GitHub Apps"
+4. To customize the included repositories, go to "Settings" -> "GitHub Apps"
 
 ## Connect the installed organization with the Tracker flow
 
@@ -21,7 +24,7 @@ Where:
 
 - `id` is the identifier used for defining jobs (can be any string)
 - `name` - the GitHub organization slug
-- `nodeId` - Holdex Oracle project ID, if no project is defined use explicit value `337c06eb` for HX project column
+- `nodeId` - Holdex Oracle project ID, if no project is defined, use explicit value `337c06eb` for HX project column
 
 2. Re-deploy the current production build so changes can take effect.
 
@@ -57,7 +60,7 @@ Where:
 - Install all dependencies via `pnpm`
 - Download the development variables via `npm run pre-dev`
 - Define a development endpoint in Trigger dev UI with the address `https://alert-seemingly-moccasin.ngrok-free.app/api/trigger`
-- Add your Trigger dev env variables from self-hosted UI into the `.env file`
+- Add your Trigger dev env variables from the self-hosted UI into the `.env file`
 
 ```
 TRIGGER_API_KEY="api_key"
