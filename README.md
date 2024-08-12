@@ -3,6 +3,7 @@
 PR Time Tracker automates invoice generation processes and tracks core developer activity related to PRs and issues.
 
 ## Contributing
+
 If you want to contribute, please follow Holdex [Developer Guidelines](https://github.com/holdex/developers).
 
 ## Installing application
@@ -54,11 +55,12 @@ Where:
 - Start the proxy server for `npm run trigger-dev:proxy`
 - Use the forwarding URL that telebit gave you for the `LOGIN_ORIGIN` and `API_ORIGIN` environment variables for the docker container.
 - `cd container` and run `docker compose up`, then wait for the container to run the configuration
+- Download the environment variables via `npm run pre-dev` script
 
 ### Dev Steps
 
+- Use the `.env` `NPM_RC` variable to bind your `.npmrc` file or copy the `.nrpc.example` and replace with the related token
 - Install all dependencies via `pnpm`
-- Download the development variables via `npm run pre-dev`
 - Define a development endpoint in Trigger dev UI with the address `https://alert-seemingly-moccasin.ngrok-free.app/api/trigger`
 - Add your Trigger dev env variables from the self-hosted UI into the `.env file`
 
