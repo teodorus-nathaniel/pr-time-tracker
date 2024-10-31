@@ -7,9 +7,15 @@ import type {
   Organization,
   Repository,
   PullRequestEvent,
-  PullRequestReviewEvent
+  PullRequestReviewEvent,
+  Issue
 } from '@octokit/webhooks-types';
-import type { User as UserGQL, Repository as RepoGQL, IssueComment } from '@octokit/graphql-schema';
+import type {
+  User as UserGQL,
+  Repository as RepoGQL,
+  IssueComment,
+  PullRequest as PullRequestGQL
+} from '@octokit/graphql-schema';
 import type { ContributorSchema, ItemSchema } from '$lib/@types';
 import type { IOWithIntegrations } from '@trigger.dev/sdk';
 
@@ -32,7 +38,8 @@ const excludedAccounts: string[] = [
   'coderabbitai',
   'github-advanced-security[bot]',
   'dependabot[bot]',
-  'pr-time-tracker'
+  'pr-time-tracker',
+  'pr-time-tracker[bot]'
 ];
 
 const getContributorInfo = (user: User): Omit<ContributorSchema, 'role' | 'rate'> => ({
@@ -424,6 +431,31 @@ async function createComment(
   }
 }
 
+async function getPullRequestByIssue(
+  issue: Issue,
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  io: any
+): Promise<PullRequestGQL | undefined> {
+  const previousComment = await io.runTask('get-pull-request-by-issue', async () => {
+    try {
+      const octokit = await githubApp.getInstallationOctokit(orgID);
+      const data = await octokit.rest.pulls.get({
+        owner: orgName,
+        repo: repositoryName,
+        pull_number: issue.number
+      });
+      return data.data;
+    } catch (error) {
+      await io.logger.error('get pull request id by issue id', { error });
+      return undefined;
+    }
+  });
+
+  return previousComment;
+}
+
 export {
   githubApp,
   runPrFixCheckRun,
@@ -445,5 +477,6 @@ export {
   bodyWithHeader,
   submissionHeaderComment,
   bodyWithHeaderForPR,
-  submissionHeaderCommentForPR
+  submissionHeaderCommentForPR,
+  getPullRequestByIssue
 };
