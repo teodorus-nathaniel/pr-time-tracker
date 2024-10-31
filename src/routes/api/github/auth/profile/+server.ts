@@ -46,5 +46,6 @@ export const GET: RequestHandler = async ({ cookies }) => {
   })
     .then((r) => r.json())
     .then((r) => (user = r));
+
   return json({ user }, { status: 200 });
 };
