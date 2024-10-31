@@ -305,6 +305,14 @@ function bodyWithHeader(body: string, header: string): string {
   return `${body}\n${submissionHeaderComment(header)}`;
 }
 
+function submissionHeaderCommentForPR(header: string): string {
+  return `<!-- Sticky Pull Request Comment${header} -->`;
+}
+
+function bodyWithHeaderForPR(body: string, header: string): string {
+  return `${body}\n${submissionHeaderCommentForPR(header)}`;
+}
+
 const queryPreviousComment = async <T extends Octokit>(
   repo: { owner: string; repo: string },
   idNumber: number,
@@ -435,5 +443,7 @@ export {
   deleteComment,
   createComment,
   bodyWithHeader,
-  submissionHeaderComment
+  submissionHeaderComment,
+  bodyWithHeaderForPR,
+  submissionHeaderCommentForPR
 };
