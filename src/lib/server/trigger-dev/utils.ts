@@ -287,9 +287,9 @@ async function deleteComment(
   repositoryName: string,
   previousComment: any,
   io: any
-): Promise<void> {
+): Promise<boolean> {
   try {
-    await io.runTask('delete-comment', async () => {
+    return await io.runTask('delete-comment', async () => {
       const octokit = await githubApp.getInstallationOctokit(orgID);
       if (previousComment?.databaseId) {
         await octokit.rest.issues.deleteComment({
@@ -297,10 +297,13 @@ async function deleteComment(
           repo: repositoryName,
           comment_id: previousComment.databaseId
         });
+        return true;
       }
+      return false;
     });
   } catch (error) {
     await io.logger.error('delete comment', { error });
+    return (error as { location: string })?.location === 'after_complete_task';
   }
 }
 
@@ -360,6 +363,7 @@ const queryPreviousComment = async <T extends Octokit>(
       `,
       { ...repo, after, number: idNumber }
     );
+    console.log(data);
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const viewer = data.viewer as UserGQL;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -464,7 +468,7 @@ async function reinsertComment<T extends IOWithIntegrations<{ github: Autoinvoic
   prOrIssueNumber: number,
   io: T
 ) {
-  const prevComment = await io.runTask('delete-previous-comment', async () => {
+  const { comment, isDeleted } = await io.runTask('delete-previous-comment', async () => {
     const previousComment = await getPreviousComment(
       orgID,
       orgName,
@@ -475,16 +479,17 @@ async function reinsertComment<T extends IOWithIntegrations<{ github: Autoinvoic
       io
     );
 
+    let hasBeenDeleted = false;
     if (previousComment) {
-      await deleteComment(orgID, orgName, repositoryName, previousComment, io);
+      hasBeenDeleted = await deleteComment(orgID, orgName, repositoryName, previousComment, io);
     }
 
-    return previousComment;
+    return { comment: previousComment, isDeleted: hasBeenDeleted };
   });
 
-  if (prevComment) {
+  if (isDeleted && comment) {
     await io.runTask('reinsert-comment', async () => {
-      await createComment(orgID, orgName, repositoryName, prevComment.body, prOrIssueNumber, io);
+      await createComment(orgID, orgName, repositoryName, comment.body, prOrIssueNumber, io);
     });
   }
 }
