@@ -46,13 +46,19 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         return;
       }
 
-      await reinsertComment(
-        orgDetails.id,
-        org.name,
-        repository.name,
-        submissionHeaderCommentForPr(pr.id),
-        issue.number,
-        io
+      await io.runTask(
+        'reinsert-sticky-comment',
+        async () => {
+          return reinsertComment(
+            orgDetails.id,
+            org.name,
+            repository.name,
+            submissionHeaderCommentForPr(pr.id),
+            issue.number,
+            io
+          );
+        },
+        { name: 'Reinsert sticky comment' }
       );
 
       break;
