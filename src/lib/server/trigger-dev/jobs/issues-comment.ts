@@ -43,22 +43,12 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         break;
       }
 
-      const pr = await io.runTask('convert-issue-to-pr', async () => {
-        const res = await getPullRequestByIssue(
-          issue,
-          orgDetails.id,
-          org.name,
-          repository.name,
-          io
-        );
-        return res;
-      });
-
-      if (!pr) {
-        break;
-      }
-
       const previousComment = await io.runTask('delete-previous-pr-comment', async () => {
+        const pr = await getPullRequestByIssue(issue, orgDetails.id, org.name, repository.name, io);
+        if (!pr) {
+          return;
+        }
+
         const previousComment = await getPreviousComment(
           orgDetails.id,
           orgName,
