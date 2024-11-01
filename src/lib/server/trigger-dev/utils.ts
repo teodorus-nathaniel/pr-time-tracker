@@ -363,7 +363,6 @@ const queryPreviousComment = async <T extends Octokit>(
       `,
       { ...repo, after, number: idNumber }
     );
-    console.log(data);
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const viewer = data.viewer as UserGQL;
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
