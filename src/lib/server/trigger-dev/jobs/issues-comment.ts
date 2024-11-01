@@ -4,7 +4,7 @@ import type { IssueCommentEvent } from '@octokit/webhooks-types';
 
 import {
   getInstallationId,
-  submissionHeaderCommentForPR,
+  submissionHeaderCommentForPr,
   getPullRequestByIssue,
   excludedAccounts,
   reinsertComment
@@ -50,7 +50,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         orgDetails.id,
         org.name,
         repository.name,
-        submissionHeaderCommentForPR(pr.id),
+        submissionHeaderCommentForPr(pr.id),
         issue.number,
         io
       );
