@@ -19,7 +19,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
   const { action, organization, repository, issue } = payload;
   const orgName = organization?.login || 'holdex';
 
-  const isPullRequest = issue.html_url.includes('/pull/');
+  const isPullRequest = !!issue.pull_request;
   if (!isPullRequest) {
     io.logger.log('comment creation in issue is not in the parse candidate', payload);
     return;
