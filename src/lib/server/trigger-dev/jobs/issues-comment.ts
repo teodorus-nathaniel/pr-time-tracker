@@ -43,7 +43,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         break;
       }
 
-      const previousComment = await io.runTask('delete-previous-pr-comment', async () => {
+      const prevComment = await io.runTask('delete-previous-pr-comment', async () => {
         const pr = await getPullRequestByIssue(issue, orgDetails.id, org.name, repository.name, io);
         if (!pr) {
           return;
@@ -66,13 +66,13 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         return previousComment;
       });
 
-      if (previousComment) {
+      if (prevComment) {
         await io.runTask('reinsert-pr-comment', async () => {
           await createComment(
             orgDetails.id,
             orgName,
             repository.name,
-            previousComment.body,
+            prevComment.body,
             issue.number,
             io
           );
