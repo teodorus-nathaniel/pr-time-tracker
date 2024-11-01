@@ -37,7 +37,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
   switch (action) {
     case 'created': {
       if (excludedAccounts.includes(payload.sender.login)) {
-        io.logger.log('current sender for issue comment is excluded', payload);
+        io.logger.log(`current sender ${payload.sender.login} for issue comment is excluded`);
         return;
       }
 
