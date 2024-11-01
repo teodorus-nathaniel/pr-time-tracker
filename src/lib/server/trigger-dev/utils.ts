@@ -456,6 +456,39 @@ async function getPullRequestByIssue(
   return previousComment;
 }
 
+async function reinsertComment<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  header: string,
+  prOrIssueNumber: number,
+  io: T
+) {
+  const prevComment = await io.runTask('delete-previous-comment', async () => {
+    const previousComment = await getPreviousComment(
+      orgID,
+      orgName,
+      repositoryName,
+      header,
+      prOrIssueNumber,
+      'pullRequest',
+      io
+    );
+
+    if (previousComment) {
+      await deleteComment(orgID, orgName, repositoryName, previousComment, io);
+    }
+
+    return previousComment;
+  });
+
+  if (prevComment) {
+    await io.runTask('reinsert-comment', async () => {
+      await createComment(orgID, orgName, repositoryName, prevComment.body, prOrIssueNumber, io);
+    });
+  }
+}
+
 export {
   githubApp,
   runPrFixCheckRun,
@@ -478,5 +511,6 @@ export {
   submissionHeaderComment,
   bodyWithHeaderForPR,
   submissionHeaderCommentForPR,
-  getPullRequestByIssue
+  getPullRequestByIssue,
+  reinsertComment
 };

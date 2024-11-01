@@ -3,13 +3,11 @@ import type { Autoinvoicing } from '@holdex/autoinvoicing';
 import type { IssueCommentEvent } from '@octokit/webhooks-types';
 
 import {
-  getPreviousComment,
-  deleteComment,
-  createComment,
   getInstallationId,
   submissionHeaderCommentForPR,
   getPullRequestByIssue,
-  excludedAccounts
+  excludedAccounts,
+  reinsertComment
 } from '../utils';
 
 export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
@@ -43,41 +41,19 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         break;
       }
 
-      const prevComment = await io.runTask('delete-previous-pr-comment', async () => {
-        const pr = await getPullRequestByIssue(issue, orgDetails.id, org.name, repository.name, io);
-        if (!pr) {
-          return;
-        }
-
-        const previousComment = await getPreviousComment(
-          orgDetails.id,
-          orgName,
-          repository.name,
-          submissionHeaderCommentForPR(pr.id),
-          pr.number,
-          'pullRequest',
-          io
-        );
-
-        if (previousComment) {
-          await deleteComment(orgDetails.id, orgName, repository.name, previousComment, io);
-        }
-
-        return previousComment;
-      });
-
-      if (prevComment) {
-        await io.runTask('reinsert-pr-comment', async () => {
-          await createComment(
-            orgDetails.id,
-            orgName,
-            repository.name,
-            prevComment.body,
-            issue.number,
-            io
-          );
-        });
+      const pr = await getPullRequestByIssue(issue, orgDetails.id, org.name, repository.name, io);
+      if (!pr) {
+        return;
       }
+
+      await reinsertComment(
+        orgDetails.id,
+        org.name,
+        repository.name,
+        submissionHeaderCommentForPR(pr.id),
+        issue.number,
+        io
+      );
 
       break;
     }
