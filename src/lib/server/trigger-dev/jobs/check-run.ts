@@ -21,8 +21,8 @@ import {
   submissionCheckPrefix,
   githubApp,
   bugCheckPrefix,
-  submissionHeaderCommentForPr,
-  bodyWithHeaderForPr
+  submissionHeaderComment,
+  bodyWithHeader
 } from '../utils';
 
 export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
@@ -260,7 +260,7 @@ async function runSubmissionJob<T extends IOWithIntegrations<{ github: Autoinvoi
     const previous = await getPreviousComment<typeof octokit>(
       { owner: payload.organization, repo: repoDetails.data.name },
       payload.prNumber,
-      submissionHeaderCommentForPr(payload.prId.toString()),
+      submissionHeaderComment('Pull Request', payload.prId.toString()),
       octokit
     );
     return previous;
@@ -270,7 +270,8 @@ async function runSubmissionJob<T extends IOWithIntegrations<{ github: Autoinvoi
   const submissionCreated = result.checkRun?.conclusion === 'SUCCESS';
   let members: string[] = [];
 
-  const commentBody = bodyWithHeaderForPr(
+  const commentBody = bodyWithHeader(
+    'Pull Request',
     `<members>⚠️⚠️⚠️\nYou must [submit the time](https://pr-time-tracker.vercel.app/prs/${payload.organization}/${repoDetails.data.name}/${payload.prId}) spent on this PR.\n⚠️⚠️⚠️`,
     payload.prId.toString()
   );

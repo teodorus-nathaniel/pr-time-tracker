@@ -14,7 +14,7 @@ import {
   reinsertComment,
   runPrFixCheckRun,
   submissionCheckName,
-  submissionHeaderCommentForPr
+  submissionHeaderComment
 } from '../utils';
 
 import { EventType, type ItemSchema } from '$lib/@types';
@@ -56,7 +56,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
               orgDetails.id,
               orgName,
               repository.name,
-              submissionHeaderCommentForPr(pull_request.id.toString()),
+              submissionHeaderComment('Pull Request', pull_request.id.toString()),
               pull_request.number,
               io
             );

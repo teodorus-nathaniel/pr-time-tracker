@@ -307,20 +307,12 @@ async function deleteComment(
   }
 }
 
-function submissionHeaderComment(header: string): string {
-  return `<!-- Sticky Issue Comment${header} -->`;
+function submissionHeaderComment(type: 'Issue' | 'Pull Request', header: string): string {
+  return `<!-- Sticky ${type} Comment${header} -->`;
 }
 
-function bodyWithHeader(body: string, header: string): string {
-  return `${body}\n${submissionHeaderComment(header)}`;
-}
-
-function submissionHeaderCommentForPr(header: string): string {
-  return `<!-- Sticky Pull Request Comment${header} -->`;
-}
-
-function bodyWithHeaderForPr(body: string, header: string): string {
-  return `${body}\n${submissionHeaderCommentForPr(header)}`;
+function bodyWithHeader(type: 'Issue' | 'Pull Request', body: string, header: string): string {
+  return `${body}\n${submissionHeaderComment(type, header)}`;
 }
 
 const queryPreviousComment = async <T extends Octokit>(
@@ -513,8 +505,6 @@ export {
   createComment,
   bodyWithHeader,
   submissionHeaderComment,
-  bodyWithHeaderForPr,
-  submissionHeaderCommentForPr,
   getPullRequestByIssue,
   reinsertComment
 };

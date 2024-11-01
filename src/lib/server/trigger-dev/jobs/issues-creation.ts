@@ -37,7 +37,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
           orgDetails.id,
           orgName,
           repository.name,
-          submissionHeaderComment(payload.issue.id.toString()),
+          submissionHeaderComment('Issue', payload.issue.id.toString()),
           issue.number,
           'issue',
           io
@@ -51,6 +51,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
       if (issue.title.length > MAX_TITLE_LENGTH) {
         await io.runTask('add-issue-title-comment', async () => {
           const commentBody = bodyWithHeader(
+            'Issue',
             `@` +
               payload.sender.login +
               ` please change the title of this issue to make sure the length doesn't exceed ` +
