@@ -38,7 +38,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
     case 'created': {
       if (excludedAccounts.includes(payload.sender.login)) {
         io.logger.log('current sender for issue comment is excluded', payload);
-        break;
+        return;
       }
 
       const pr = await getPullRequestByIssue(issue, orgDetails.id, org.name, repository.name, io);
