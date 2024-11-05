@@ -10,6 +10,7 @@ import { createJob as createPrJob } from './pull-requests';
 import { createJob as createPrReviewJob } from './pull-requests-review';
 import { createJob as createIssueJob } from './issues';
 import { createJob as createIssueCreationJob } from './issues-creation';
+import { createJob as createIssueCommentJob } from './issues-comment';
 import { createJob as createCheckRunJob, createEventJob as createCheckEventJob } from './check-run';
 
 config.integrationsList.forEach((org) => {
@@ -25,6 +26,20 @@ config.integrationsList.forEach((org) => {
     integrations: { github },
     run: async (payload, io, ctx) =>
       createIssueCreationJob<IOWithIntegrations<{ github: Autoinvoicing }>>(payload, io, ctx, org)
+  });
+
+  client.defineJob({
+    // This is the unique identifier for your Job, it must be unique across all Jobs in your project
+    id: `issue-comment-streaming_${org.id}${isDev ? '_dev' : ''}`,
+    name: 'Streaming issue comment for Github using app',
+    version: '0.0.1',
+    trigger: github.triggers.org({
+      event: events.onIssueComment,
+      org: org.name
+    }),
+    integrations: { github },
+    run: async (payload, io, ctx) =>
+      createIssueCommentJob<IOWithIntegrations<{ github: Autoinvoicing }>>(payload, io, ctx, org)
   });
 
   client.defineJob({

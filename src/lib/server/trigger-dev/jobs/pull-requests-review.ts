@@ -11,8 +11,10 @@ import {
   getContributorInfo,
   getInstallationId,
   getPrInfo,
+  reinsertComment,
   runPrFixCheckRun,
-  submissionCheckName
+  submissionCheckName,
+  submissionHeaderComment
 } from '../utils';
 
 import { EventType, type ItemSchema } from '$lib/@types';
@@ -23,6 +25,7 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
   ctx: TriggerContext
 ) {
   const { action, pull_request, repository, organization, review } = payload;
+  const orgName = organization?.login || 'holdex';
 
   switch (action) {
     case 'submitted': {
@@ -34,10 +37,6 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
         review.state === 'changes_requested' ||
         review.state === 'commented'
       ) {
-        await insertPrEvent(payload, io);
-
-        const prInfo = await updatePrInfo(payload, io, (s) => s);
-
         const orgDetails = await io.runTask(
           'get org installation',
           async () => {
@@ -45,6 +44,24 @@ export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoi
             return data;
           },
           { name: 'Get Organization installation' }
+        );
+
+        await insertPrEvent(payload, io);
+        const prInfo = await updatePrInfo(payload, io, (s) => s);
+
+        await io.runTask(
+          'reinsert-sticky-comment',
+          async () => {
+            return reinsertComment(
+              orgDetails.id,
+              orgName,
+              repository.name,
+              submissionHeaderComment('Pull Request', pull_request.id.toString()),
+              pull_request.number,
+              io
+            );
+          },
+          { name: 'Reinsert sticky comment' }
         );
 
         const contributorList = await io.runTask<any>(

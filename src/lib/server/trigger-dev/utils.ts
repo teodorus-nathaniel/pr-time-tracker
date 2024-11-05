@@ -7,9 +7,15 @@ import type {
   Organization,
   Repository,
   PullRequestEvent,
-  PullRequestReviewEvent
+  PullRequestReviewEvent,
+  Issue
 } from '@octokit/webhooks-types';
-import type { User as UserGQL, Repository as RepoGQL, IssueComment } from '@octokit/graphql-schema';
+import type {
+  User as UserGQL,
+  Repository as RepoGQL,
+  IssueComment,
+  PullRequest as PullRequestGQL
+} from '@octokit/graphql-schema';
 import type { ContributorSchema, ItemSchema } from '$lib/@types';
 import type { IOWithIntegrations } from '@trigger.dev/sdk';
 
@@ -32,7 +38,8 @@ const excludedAccounts: string[] = [
   'coderabbitai',
   'github-advanced-security[bot]',
   'dependabot[bot]',
-  'pr-time-tracker'
+  'pr-time-tracker',
+  'pr-time-tracker[bot]'
 ];
 
 const getContributorInfo = (user: User): Omit<ContributorSchema, 'role' | 'rate'> => ({
@@ -280,9 +287,9 @@ async function deleteComment(
   repositoryName: string,
   previousComment: any,
   io: any
-): Promise<void> {
+): Promise<boolean> {
   try {
-    await io.runTask('delete-comment', async () => {
+    return await io.runTask('delete-comment', async () => {
       const octokit = await githubApp.getInstallationOctokit(orgID);
       if (previousComment?.databaseId) {
         await octokit.rest.issues.deleteComment({
@@ -290,19 +297,22 @@ async function deleteComment(
           repo: repositoryName,
           comment_id: previousComment.databaseId
         });
+        return true;
       }
+      return false;
     });
   } catch (error) {
     await io.logger.error('delete comment', { error });
+    return (error as { location: string })?.location === 'after_complete_task';
   }
 }
 
-function submissionHeaderComment(header: string): string {
-  return `<!-- Sticky Issue Comment${header} -->`;
+function submissionHeaderComment(type: 'Issue' | 'Pull Request', header: string): string {
+  return `<!-- Sticky ${type} Comment${header} -->`;
 }
 
-function bodyWithHeader(body: string, header: string): string {
-  return `${body}\n${submissionHeaderComment(header)}`;
+function bodyWithHeader(type: 'Issue' | 'Pull Request', body: string, header: string): string {
+  return `${body}\n${submissionHeaderComment(type, header)}`;
 }
 
 const queryPreviousComment = async <T extends Octokit>(
@@ -416,6 +426,65 @@ async function createComment(
   }
 }
 
+async function getPullRequestByIssue(
+  issue: Issue,
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  io: any
+): Promise<PullRequestGQL | undefined> {
+  const previousComment = await io.runTask('get-pull-request-by-issue', async () => {
+    try {
+      const octokit = await githubApp.getInstallationOctokit(orgID);
+      const data = await octokit.rest.pulls.get({
+        owner: orgName,
+        repo: repositoryName,
+        pull_number: issue.number
+      });
+      return data.data;
+    } catch (error) {
+      await io.logger.error('get pull request id by issue id', { error });
+      return undefined;
+    }
+  });
+
+  return previousComment;
+}
+
+async function reinsertComment<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
+  orgID: number,
+  orgName: string,
+  repositoryName: string,
+  header: string,
+  prOrIssueNumber: number,
+  io: T
+) {
+  const { comment, isDeleted } = await io.runTask('delete-previous-comment', async () => {
+    const previousComment = await getPreviousComment(
+      orgID,
+      orgName,
+      repositoryName,
+      header,
+      prOrIssueNumber,
+      'pullRequest',
+      io
+    );
+
+    let hasBeenDeleted = false;
+    if (previousComment) {
+      hasBeenDeleted = await deleteComment(orgID, orgName, repositoryName, previousComment, io);
+    }
+
+    return { comment: previousComment, isDeleted: hasBeenDeleted };
+  });
+
+  if (isDeleted && comment) {
+    await io.runTask('reinsert-comment', async () => {
+      await createComment(orgID, orgName, repositoryName, comment.body, prOrIssueNumber, io);
+    });
+  }
+}
+
 export {
   githubApp,
   runPrFixCheckRun,
@@ -435,5 +504,7 @@ export {
   deleteComment,
   createComment,
   bodyWithHeader,
-  submissionHeaderComment
+  submissionHeaderComment,
+  getPullRequestByIssue,
+  reinsertComment
 };

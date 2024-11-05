@@ -301,12 +301,12 @@ const onIssueAssigned: EventSpecification<IssuesAssignedEvent> = {
 };
 
 const onIssueComment: EventSpecification<IssueCommentEvent> = {
-  name: 'issues',
+  name: 'issue_comment',
   title: 'On issue comment',
   source: 'github.com',
   icon: 'github',
   filter: {
-    action: ['commented']
+    action: ['created']
   },
   examples: [issueCommentCreated],
   parsePayload: (payload) => payload as IssueCommentEvent,

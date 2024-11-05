@@ -20,7 +20,9 @@ import {
   getSubmissionStatus,
   submissionCheckPrefix,
   githubApp,
-  bugCheckPrefix
+  bugCheckPrefix,
+  submissionHeaderComment,
+  bodyWithHeader
 } from '../utils';
 
 export async function createJob<T extends IOWithIntegrations<{ github: Autoinvoicing }>>(
@@ -258,7 +260,7 @@ async function runSubmissionJob<T extends IOWithIntegrations<{ github: Autoinvoi
     const previous = await getPreviousComment<typeof octokit>(
       { owner: payload.organization, repo: repoDetails.data.name },
       payload.prNumber,
-      submissionHeaderComment(payload.prId.toString()),
+      submissionHeaderComment('Pull Request', payload.prId.toString()),
       octokit
     );
     return previous;
@@ -269,6 +271,7 @@ async function runSubmissionJob<T extends IOWithIntegrations<{ github: Autoinvoi
   let members: string[] = [];
 
   const commentBody = bodyWithHeader(
+    'Pull Request',
     `<members>⚠️⚠️⚠️\nYou must [submit the time](https://pr-time-tracker.vercel.app/prs/${payload.organization}/${repoDetails.data.name}/${payload.prId}) spent on this PR.\n⚠️⚠️⚠️`,
     payload.prId.toString()
   );
@@ -573,14 +576,6 @@ async function updateCheckRun<T extends Octokit>(octokit: T, input: UpdateCheckR
       `,
     { input }
   );
-}
-
-function submissionHeaderComment(header: string): string {
-  return `<!-- Sticky Pull Request Comment${header} -->`;
-}
-
-function bodyWithHeader(body: string, header: string): string {
-  return `${body}\n${submissionHeaderComment(header)}`;
 }
 
 const regex = new RegExp(/\B@([a-z0-9](?:-(?=[a-z0-9])|[a-z0-9]){0,38}(?<=[a-z0-9]))/, 'gmi');
